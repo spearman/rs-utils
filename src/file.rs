@@ -4,21 +4,12 @@ extern crate std;
 //  file_new_append_incremental
 //
 /// Calls `file_new_append` on the path returned by feeding the file path
-/// to `file_path_incremental`
+/// to `file_path_incremental`.
 
 /// # Errors
 ///
-/// - Invalid unicode (see [`is_file`](fn.is_file.html))
-/// - Not a file:
-///
-/// ```
-/// # use std::path::Path; use std::io::ErrorKind;
-/// # use rs_utils::file::file_new_append_incremental;
-/// assert_eq!(
-///   file_new_append_incremental (Path::new ("somedir/")).unwrap_err().kind(),
-///   ErrorKind::InvalidInput);
-/// ```
-///
+/// - Invalid unicode (&#x261e; see [`is_file`](fn.is_file.html))
+/// - Not a file (&#x261e; see [`file_path_incremental`](fn.file_path_incremental.html))
 
 pub fn file_new_append_incremental (file_path : &std::path::Path)
   -> Result <std::fs::File, std::io::Error>
@@ -35,29 +26,35 @@ pub fn file_new_append_incremental (file_path : &std::path::Path)
 
 /// # Errors
 ///
-/// - Invalid unicode (see [`is_file`](fn.is_file.html))
+/// - Invalid unicode (&#x261e; see [`is_file`](fn.is_file.html))
 /// - Not a file:
 ///
 /// ```
-/// # use std::path::Path; use std::io::ErrorKind;
+/// # use std::error::Error; use std::io::ErrorKind; use std::path::Path;
 /// # use rs_utils::file::file_new_append;
-/// assert_eq!(
-///   file_new_append (Path::new ("somedir/")).unwrap_err().kind(),
-///   ErrorKind::InvalidInput);
+/// let e = file_new_append (Path::new ("somepath/")).err().unwrap();
+/// assert_eq!(e.kind(), ErrorKind::InvalidInput);
+/// assert_eq!(e.description(), "not a file");
 /// ```
 ///
 /// - File already exists:
 ///
 /// ```
-/// # use std::path::Path; use std::io::ErrorKind;
+/// extern crate tempdir;
+/// # extern crate rs_utils;
+/// # use std::error::Error; use std::io::ErrorKind; use std::path::Path;
 /// # use rs_utils::file::file_new_append;
-/// let file_path = Path::new ("somedir/somefile");
+/// # fn main () {
+///
+/// let temp_dir = tempdir::TempDir::new_in ("", "tmp").unwrap();
+/// let file_path = temp_dir.path().join (Path::new ("somefile"));
+/// let file_path = file_path.as_path();
 /// assert! (!file_path.exists());
 /// file_new_append (file_path).unwrap();
-/// assert_eq!(
-///   file_new_append (file_path).unwrap_err().kind(),
-///   ErrorKind::AlreadyExists);
-/// # std::fs::remove_dir_all (Path::new ("somedir")).unwrap()
+/// let e = file_new_append (file_path).err().unwrap();
+/// assert_eq!(e.kind(), ErrorKind::AlreadyExists);
+/// assert_eq!(e.description(), "entity already exists");
+/// # }
 /// ```
 
 pub fn file_new_append (file_path : &std::path::Path)
@@ -65,18 +62,15 @@ pub fn file_new_append (file_path : &std::path::Path)
 {
   if !try!{ is_file (file_path) } {
     return Err (std::io::Error::new (std::io::ErrorKind::InvalidInput,
-      "no file specified".to_string()))
-  }
-
-  if file_path.exists() {
-    return Err (std::io::Error::new (std::io::ErrorKind::AlreadyExists,
-      "file already exists".to_string()))
+      "not a file".to_string()))
   }
 
   let dir = file_path.parent().unwrap_or (std::path::Path::new (""));
   try!{ std::fs::create_dir_all (dir) };
 
-  std::fs::File::create (file_path)
+  std::fs::OpenOptions::new().append (true).create_new (true)
+    .open (file_path)
+
 } // end file_new_append
 
 //
@@ -93,26 +87,24 @@ pub fn file_new_append (file_path : &std::path::Path)
 /// ```
 /// # use std::path::Path;
 /// # use rs_utils::file::file_path_incremental;
+/// let file_path = Path::new ("somedir/somefile");
 /// assert_eq!(
-///   file_path_incremental (Path::new ("somedir/somefile")).unwrap().as_path().to_str().unwrap(),
+///   file_path_incremental (file_path).unwrap().to_str().unwrap(),
 ///   "somedir/somefile.0"
 /// );
 /// ```
 
 /// # Errors
 ///
-/// - Invalid unicode (see [`is_file`](fn.is_file.html))
+/// - Invalid unicode (&#x261e; see [`is_file`](fn.is_file.html))
 /// - Not a file:
 ///
 /// ```
-/// # use std::io::ErrorKind; use std::path::Path;
+/// # use std::error::Error; use std::io::ErrorKind; use std::path::Path;
 /// # use rs_utils::file::file_path_incremental;
-/// assert_eq!(
-///   file_path_incremental (Path::new ("somepath/")).unwrap_err().kind(),
-///   ErrorKind::InvalidInput);
-/// assert_eq!(
-///   file_path_incremental (Path::new (".")).unwrap_err().kind(),
-///   ErrorKind::InvalidInput);
+/// let e = file_path_incremental (Path::new ("somepath/")).err().unwrap();
+/// assert_eq!(e.kind(), ErrorKind::InvalidInput);
+/// assert_eq!(e.description(), "not a file");
 /// ```
 
 pub fn file_path_incremental (file_path : &std::path::Path)
@@ -121,7 +113,7 @@ pub fn file_path_incremental (file_path : &std::path::Path)
   if !try!{ is_file (file_path) } {
     return Err (std::io::Error::new (
       std::io::ErrorKind::InvalidInput,
-      "no file specified".to_string()))
+      "not a file".to_string()))
   }
 
   // unwrap failure should have been caught by `is_file` test
@@ -148,6 +140,11 @@ pub fn file_path_incremental (file_path : &std::path::Path)
 /// If this returns true then `std::fs::File::create` will not fail
 /// with "is a directory" error.
 ///
+/// This is not the same as `std::path::Path::is_file` which also
+/// tests whether the file actually exists.
+///
+/// # Examples
+///
 /// ```
 /// # use std::path::Path; use rs_utils::file::is_file;
 /// assert!(is_file (Path::new ("path/to/file")).unwrap());
@@ -160,15 +157,15 @@ pub fn file_path_incremental (file_path : &std::path::Path)
 /// - Invalid unicode:
 ///
 /// ```
-/// # use std::path::Path; use std::ffi::OsStr; use std::io::ErrorKind;
+/// # use std::error::Error; use std::io::ErrorKind;
+/// # use std::path::Path; use std::ffi::OsStr;
 /// # use rs_utils::file::is_file;
 /// use std::os::unix::ffi::OsStrExt;
 /// let garbage = [192u8, 192u8, 192u8, 192u8];
 /// let garbage_path = Path::new (OsStr::from_bytes (&garbage));
-/// assert_eq!(
-///   is_file (&garbage_path).unwrap_err().kind(),
-///   ErrorKind::InvalidInput
-/// );
+/// let e = is_file (&garbage_path).err().unwrap();
+/// assert_eq!(e.kind(), ErrorKind::InvalidInput);
+/// assert_eq!(e.description(), "not valid unicode");
 /// ```
 
 pub fn is_file (file_path : &std::path::Path)
@@ -196,74 +193,42 @@ pub fn is_file (file_path : &std::path::Path)
 //
 #[cfg(test)]
 mod tests {
+  use ::file::*;
   extern crate std;
-
-  //
-  //  test_file_new_append
-  //
-  #[test]
-  fn test_file_new_append () {
-    use ::file::file_new_append;
-    {
-      let file_path = std::path::Path::new (
-        "test_file_new_append/myfile");
-      file_new_append (file_path).unwrap();
-      assert!(file_path.exists());
-      assert!(file_path.is_file());
-    }
-    // cleanup
-    std::fs::remove_dir_all (
-      std::path::Path::new ("test_file_new_append")
-    ).unwrap()
-  }
-
-  //
-  //  test_file_path_incremental
-  //
-  #[test]
-  fn test_file_path_incremental () {
-    use ::file::file_path_incremental;
-    assert_eq!(
-      "test_file_path_incremental/myfile.0",
-      file_path_incremental (
-        std::path::Path::new ("test_file_path_incremental/myfile")
-      ).unwrap().as_path().to_str().unwrap()
-    );
-  }
+  extern crate quickcheck;
+  extern crate tempdir;
 
   //
   //  test_is_file
   //
-  #[test]
-  fn test_is_file () {
-    use ::file::is_file;
-
-    // ok: is file
-    assert!(
-      is_file (std::path::Path::new ("path/to/file")).unwrap()
-    );
-    // ok: is directory
-    assert!(
-      !is_file (std::path::Path::new ("path/to/directory/")).unwrap()
-    );
-    assert!(
-      !is_file (std::path::Path::new ("..")).unwrap()
-    );
-    assert!(
-      !is_file (std::path::Path::new (".")).unwrap()
-    );
-    // err: invalid input
-    use std::os::unix::ffi::OsStrExt;
-    let garbage = [192u8, 192u8, 192u8, 192u8];
-    let garbage_path = std::path::Path::new (
-      std::ffi::OsStr::from_bytes (&garbage));
-    assert_eq!(
-      is_file (&garbage_path).unwrap_err().kind(),
-      std::io::ErrorKind::InvalidInput
-    );
-
-    // TODO: test that is_file() implies std::fs::File::create will
-    // not give an "is a directory" error
+  // test that is_file() implies file creation will not give an "is a
+  // directory" error: as of Rust 1.16 (2017-01-23) this error is
+  // simply indicated by an ErrorKind::Other (other os error)
+  #[ignore]
+  #[quickcheck]
+  fn prop_is_file_implies_not_directory (file_path : String)
+    -> quickcheck::TestResult
+  {
+    let file_path = std::path::Path::new (file_path.as_str());
+    if !unwrap!{ is_file (file_path) } {
+      return quickcheck::TestResult::discard()
+    }
+    if let Some (s) = file_path.parent() {
+      if !s.to_str().unwrap().is_empty() {
+        return quickcheck::TestResult::discard()
+      }
+    }
+    let temp_dir = tempdir::TempDir::new_in ("", "tmp").unwrap();
+    let file_path = temp_dir.path().join (file_path);
+    quickcheck::TestResult::from_bool (
+      if let Err(e) = std::fs::OpenOptions::new()
+        .append (true).create (true).open (file_path.clone())
+      {
+        e.kind() != std::io::ErrorKind::Other
+      } else {
+        true
+      }
+    )
   }
 
 }
