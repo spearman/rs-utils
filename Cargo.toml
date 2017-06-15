@@ -1,12 +1,13 @@
 [package]
 name = "rs-utils"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Shane Pearman <spearman@github.com>"]
 
 [dependencies]
+unwrap = "1.*"
+lazy_static = "0.2.*"
 
 [dev-dependencies]
-unwrap = "1.1.0"
-tempdir = "0.3.5"
-quickcheck = "0.4.1"
-quickcheck_macros = "0.4.1"
+tempdir = "0.3.*"
+quickcheck = "0.4.*"
+quickcheck_macros = "0.4.*"

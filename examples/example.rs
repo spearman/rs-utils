@@ -1,11 +1,11 @@
+#[macro_use] extern crate unwrap;
+
 extern crate tempdir;
-#[macro_use]
-extern crate unwrap;
 
 extern crate rs_utils;
 
 fn main () {
-  println!("example rs_utils::file main...");
+  println!("{} main...", *rs_utils::process::FILE_NAME);
 
   let temp_dir = unwrap!{ tempdir::TempDir::new_in ("examples", "tmp") };
 
@@ -56,5 +56,5 @@ fn main () {
     }.success()
   };
 
-  println!("...example rs_utils::file main");
+  println!("...{} main", *rs_utils::process::FILE_NAME);
 }

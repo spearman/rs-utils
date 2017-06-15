@@ -3,10 +3,10 @@
 
 #![feature(custom_attribute)]
 
-#[cfg(test)]
-extern crate quickcheck;
-#[cfg(test)]
-#[macro_use]
-extern crate unwrap;
+#[macro_use] extern crate unwrap;
+#[macro_use] extern crate lazy_static;
+
+#[cfg(test)] extern crate quickcheck;
 
 pub mod file;
+pub mod process;
