@@ -1,29 +1,30 @@
-//! Exports a macro `enum_unitary!` that wraps "unitary" enums (i.e.  enums
-//! where variants do not have payloads) with `enum_derive` and additionally
-//! provides a few more conveniences:
-//!
-//! - a constant function `count()` that returns the number of variants in the
-//!   enum
-//! - a `num::Bounded` implementation (provides `min_value()`, `max_value()`
-//!   functions)
-//! - a `num::FromPrimitive` implementation (provides `from_*` functions for
-//!   signed and unsigned integers)
-//!
-//! Attributes provided are passed through to the inner invocation of
-//! `macro_attr!` used to define the enum where the following macros are
-//! available for deriving (see `enum_derive` crate for details):
-//!
-//! - `EnumDisplay!`
-//! - `EnumFromInner!`
-//! - `EnumFromStr!`
-//! - `EnumInnerAsTrait!`
-//! - `IterVariantNames!`
-//! - `IterVariants!`
-//! - `NextVariant!`
-//! - `PrevVariant!`
-//!
-//! Currently explicit discriminators are not allowed, enum variants will be
-//! numbered starting from `0`.
+extern crate num;
+
+//
+//  enum_unitary!
+//
+/// Wraps "unitary" enums (i.e.  enums where variants do not have payloads)
+/// with `enum_derive` and additionally implements the `EnumUnitary` trait
+/// which includes implementations of `num::Bounded`, `num::ToPrimitive`,
+/// `num::FromPrimitive`, and and a `count_variants` method that returns the
+/// number of variants in the enum; constant non-trait method `count` is also
+/// implemented that returns this number.
+///
+/// Attributes provided are passed through to the inner invocation of
+/// `macro_attr!` and are used to define the enum where the following macros
+/// are available for deriving (see `enum_derive` crate for details):
+///
+/// - `EnumDisplay!`
+/// - `EnumFromInner!`
+/// - `EnumFromStr!`
+/// - `EnumInnerAsTrait!`
+/// - `IterVariantNames!`
+/// - `IterVariants!`
+/// - `NextVariant!`
+/// - `PrevVariant!`
+///
+/// Currently explicit discriminators are not allowed, enum variants will be
+/// numbered starting from `0`.
 
 #[macro_export]
 macro_rules! enum_unitary {
@@ -62,6 +63,21 @@ macro_rules! enum_unitary {
           0 => Some ($enum::$singleton),
           _ => None
         }
+      }
+    }
+
+    impl num::ToPrimitive for $enum {
+      fn to_i64 (&self) -> Option <i64> {
+        Some (*self as i64)
+      }
+      fn to_u64 (&self) -> Option <u64> {
+        Some (*self as u64)
+      }
+    }
+
+    impl EnumUnitary for $enum {
+      fn count_variants() -> usize {
+        Self::count()
       }
     }
 
@@ -105,6 +121,21 @@ macro_rules! enum_unitary {
           0 => Some ($enum::$singleton),
           _ => None
         }
+      }
+    }
+
+    impl num::ToPrimitive for $enum {
+      fn to_i64 (&self) -> Option <i64> {
+        Some (*self as i64)
+      }
+      fn to_u64 (&self) -> Option <u64> {
+        Some (*self as u64)
+      }
+    }
+
+    impl EnumUnitary for $enum {
+      fn count_variants() -> usize {
+        Self::count()
       }
     }
 
@@ -152,6 +183,21 @@ macro_rules! enum_unitary {
       }
     }
 
+    impl num::ToPrimitive for $enum {
+      fn to_i64 (&self) -> Option <i64> {
+        Some (*self as i64)
+      }
+      fn to_u64 (&self) -> Option <u64> {
+        Some (*self as u64)
+      }
+    }
+
+    impl EnumUnitary for $enum {
+      fn count_variants() -> usize {
+        Self::count()
+      }
+    }
+
     impl $enum {
       const fn count() -> usize {
         $enum::$max as usize + 1
@@ -193,6 +239,21 @@ macro_rules! enum_unitary {
       }
     }
 
+    impl num::ToPrimitive for $enum {
+      fn to_i64 (&self) -> Option <i64> {
+        Some (*self as i64)
+      }
+      fn to_u64 (&self) -> Option <u64> {
+        Some (*self as u64)
+      }
+    }
+
+    impl EnumUnitary for $enum {
+      fn count_variants() -> usize {
+        Self::count()
+      }
+    }
+
     impl $enum {
       const fn count() -> usize {
         $enum::$max as usize + 1
@@ -203,14 +264,22 @@ macro_rules! enum_unitary {
 
 }
 
+//
+//  trait EnumUnitary
+//
+pub trait EnumUnitary : num::Bounded + num::ToPrimitive + num::FromPrimitive {
+  fn count_variants() -> usize;
+}
+
 #[cfg(test)]
 mod tests {
   extern crate num;
 
   #[test]
   fn test_unit() {
+    use super::EnumUnitary;
     use self::num::Bounded;
-    use self::num::FromPrimitive;
+    use self::num::{FromPrimitive,ToPrimitive};
 
     // private enum
     enum_unitary!{
@@ -221,6 +290,7 @@ mod tests {
       }
     }
     assert_eq!(Myenum1::count(), 3);
+    assert_eq!(Myenum1::count_variants(), 3);
     assert_eq!(Myenum1::A as usize, 0);
     assert_eq!(Myenum1::B as usize, 1);
     assert_eq!(Myenum1::C as usize, 2);
@@ -228,6 +298,9 @@ mod tests {
     assert_eq!(Some (Myenum1::B), Myenum1::from_usize (1));
     assert_eq!(Some (Myenum1::C), Myenum1::from_usize (2));
     assert_eq!(None, Myenum1::from_usize (3));
+    assert_eq!(Some (0), Myenum1::A.to_usize());
+    assert_eq!(Some (1), Myenum1::B.to_usize());
+    assert_eq!(Some (2), Myenum1::C.to_usize());
     assert_eq!(Myenum1::min_value(), Myenum1::A);
     assert_eq!(Myenum1::max_value(), Myenum1::C);
     let mut i = Myenum1::iter_variants();
@@ -251,6 +324,7 @@ mod tests {
       }
     }
     assert_eq!(Myenum2::count(), 3);
+    assert_eq!(Myenum2::count_variants(), 3);
     assert_eq!(Myenum2::A as usize, 0);
     assert_eq!(Myenum2::B as usize, 1);
     assert_eq!(Myenum2::C as usize, 2);
@@ -258,6 +332,9 @@ mod tests {
     assert_eq!(Some (Myenum2::B), Myenum2::from_usize (1));
     assert_eq!(Some (Myenum2::C), Myenum2::from_usize (2));
     assert_eq!(None, Myenum2::from_usize (3));
+    assert_eq!(Some (0), Myenum2::A.to_usize());
+    assert_eq!(Some (1), Myenum2::B.to_usize());
+    assert_eq!(Some (2), Myenum2::C.to_usize());
     assert_eq!(Myenum2::min_value(), Myenum2::A);
     assert_eq!(Myenum2::max_value(), Myenum2::C);
     let mut i = Myenum2::iter_variants();
@@ -281,9 +358,11 @@ mod tests {
       }
     }
     assert_eq!(Myenum3::count(), 1);
+    assert_eq!(Myenum3::count_variants(), 1);
     assert_eq!(Myenum3::X as usize, 0);
     assert_eq!(Some (Myenum3::X), Myenum3::from_usize (0));
     assert_eq!(None, Myenum3::from_usize (1));
+    assert_eq!(Some (0), Myenum3::X.to_usize());
     assert_eq!(Myenum3::min_value(), Myenum3::X);
     assert_eq!(Myenum3::max_value(), Myenum3::X);
     let mut i = Myenum3::iter_variants();
@@ -301,9 +380,11 @@ mod tests {
       }
     }
     assert_eq!(Myenum4::count(), 1);
+    assert_eq!(Myenum4::count_variants(), 1);
     assert_eq!(Myenum4::X as usize, 0);
     assert_eq!(Some (Myenum4::X), Myenum4::from_usize (0));
     assert_eq!(None, Myenum4::from_usize (1));
+    assert_eq!(Some (0), Myenum4::X.to_usize());
     assert_eq!(Myenum4::min_value(), Myenum4::X);
     assert_eq!(Myenum4::max_value(), Myenum4::X);
     let mut i = Myenum4::iter_variants();

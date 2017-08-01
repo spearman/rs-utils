@@ -15,6 +15,6 @@
 #[cfg(test)] extern crate quickcheck;
 #[cfg(test)] extern crate num;
 
-pub mod macros;
+pub mod enum_unitary;
 pub mod file;
 pub mod process;
