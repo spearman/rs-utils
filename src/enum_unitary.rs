@@ -6,37 +6,27 @@ extern crate num;
 /// Wraps "unitary" enums (i.e.  enums where variants do not have payloads)
 /// with `enum_derive` and additionally implements the `EnumUnitary` trait
 /// which includes implementations of `num::Bounded`, `num::ToPrimitive`,
-/// `num::FromPrimitive`, and and a `count_variants` method that returns the
-/// number of variants in the enum; constant non-trait method `count` is also
-/// implemented that returns this number.
+/// `num::FromPrimitive`, a `count_variants` trait method and a `count`
+/// constant non-trait method that both return the number of variants in the
+/// enum, and a trait method `iter_variants` that exposes the function provided
+/// from `enum_derive`.
 ///
-/// Attributes provided are passed through to the inner invocation of
-/// `macro_attr!` and are used to define the enum where the following macros
-/// are available for deriving (see `enum_derive` crate for details):
-///
-/// - `EnumDisplay!`
-/// - `EnumFromInner!`
-/// - `EnumFromStr!`
-/// - `EnumInnerAsTrait!`
-/// - `IterVariantNames!`
-/// - `IterVariants!`
-/// - `NextVariant!`
-/// - `PrevVariant!`
-///
-/// Currently explicit discriminators are not allowed, enum variants will be
-/// numbered starting from `0`.
+/// Currently the deriving attribute is fixed and can not be overridden, and
+/// explicit discriminators are not allowed: enum variants will be numbered
+/// starting from `0`.
 
 #[macro_export]
 macro_rules! enum_unitary {
   //
   //  singleton
   //
-  ( #$attrs:tt
-    enum $enum:ident { $singleton:ident }
+  (
+    enum $enum:ident ($iter:ident) { $singleton:ident }
   ) => {
 
     macro_attr!{
-      #$attrs
+      #[derive (Clone,Copy,Debug,Eq,PartialEq,
+        IterVariants!($iter),NextVariant!,PrevVariant!)]
       enum $enum {
         $singleton=0
       }
@@ -76,8 +66,12 @@ macro_rules! enum_unitary {
     }
 
     impl rs_utils::EnumUnitary for $enum {
+      type IteratorType = $iter;
       fn count_variants() -> usize {
         Self::count()
+      }
+      fn iter_variants() -> Self::IteratorType {
+        Self::iter_variants()
       }
     }
 
@@ -89,12 +83,13 @@ macro_rules! enum_unitary {
 
   };
 
-  ( #$attrs:tt
-    pub enum $enum:ident { $singleton:ident }
+  (
+    pub enum $enum:ident ($iter:ident) { $singleton:ident }
   ) => {
 
     macro_attr!{
-      #$attrs
+      #[derive (Clone,Copy,Debug,Eq,PartialEq,
+        IterVariants!($iter),NextVariant!,PrevVariant!)]
       pub enum $enum {
         $singleton=0
       }
@@ -134,8 +129,12 @@ macro_rules! enum_unitary {
     }
 
     impl rs_utils::EnumUnitary for $enum {
+      type IteratorType = $iter;
       fn count_variants() -> usize {
         Self::count()
+      }
+      fn iter_variants() -> Self::IteratorType {
+        Self::iter_variants()
       }
     }
 
@@ -150,12 +149,13 @@ macro_rules! enum_unitary {
   //
   //  2 or more variants: minimal syntax (;)
   //
-  ( #$attrs:tt
-    enum $enum:ident { $min:ident$(, $variant:ident)*; $max:ident }
+  (
+    enum $enum:ident ($iter:ident) { $min:ident$(, $variant:ident)*; $max:ident }
   ) => {
 
     macro_attr!{
-      #$attrs
+      #[derive (Clone,Copy,Debug,Eq,PartialEq,
+        IterVariants!($iter),NextVariant!,PrevVariant!)]
       enum $enum {
         $min=0$(, $variant)*, $max
       }
@@ -193,8 +193,12 @@ macro_rules! enum_unitary {
     }
 
     impl rs_utils::EnumUnitary for $enum {
+      type IteratorType = $iter;
       fn count_variants() -> usize {
         Self::count()
+      }
+      fn iter_variants() -> Self::IteratorType {
+        Self::iter_variants()
       }
     }
 
@@ -206,12 +210,13 @@ macro_rules! enum_unitary {
 
   };
 
-  ( #$attrs:tt
-    pub enum $enum:ident { $min:ident$(, $variant:ident)*; $max:ident }
-    ) => {
+  (
+    pub enum $enum:ident ($iter:ident) { $min:ident$(, $variant:ident)*; $max:ident }
+  ) => {
 
     macro_attr!{
-      #$attrs
+      #[derive (Clone,Copy,Debug,Eq,PartialEq,
+        IterVariants!($iter),NextVariant!,PrevVariant!)]
       pub enum $enum {
         $min=0$(, $variant)*, $max
       }
@@ -249,8 +254,12 @@ macro_rules! enum_unitary {
     }
 
     impl rs_utils::EnumUnitary for $enum {
+      type IteratorType = $iter;
       fn count_variants() -> usize {
         Self::count()
+      }
+      fn iter_variants() -> Self::IteratorType {
+        Self::iter_variants()
       }
     }
 
@@ -270,9 +279,15 @@ macro_rules! enum_unitary {
 pub trait EnumUnitary :
   Clone + num::Bounded + num::ToPrimitive + num::FromPrimitive
 {
+  type IteratorType;
   fn count_variants() -> usize;
+  fn iter_variants() -> Self::IteratorType;
+  //TODO: expose more methods from enum_derive ?
 }
 
+//
+//  mod tests
+//
 #[cfg(test)]
 mod tests {
   extern crate num;
@@ -286,9 +301,7 @@ mod tests {
 
     // private enum
     enum_unitary!{
-      #[derive(Copy,Clone,Debug,Eq,PartialEq,NextVariant!,PrevVariant!,
-        IterVariants!(Myenum1Variants))]
-      enum Myenum1 {
+      enum Myenum1 (Myenum1Variants) {
         A, B; C
       }
     }
@@ -320,9 +333,7 @@ mod tests {
 
     // public enum
     enum_unitary!{
-      #[derive(Copy,Clone,Debug,Eq,PartialEq,NextVariant!,PrevVariant!,
-        IterVariants!(Myenum2Variants))]
-      pub enum Myenum2 {
+      enum Myenum2 (Myenum2Variants) {
         A, B; C
       }
     }
@@ -354,9 +365,7 @@ mod tests {
 
     // private singleton enum
     enum_unitary!{
-      #[derive(Copy,Clone,Debug,Eq,PartialEq,NextVariant!,PrevVariant!,
-        IterVariants!(Myenum3Variants))]
-      enum Myenum3 {
+      enum Myenum3 (Myenum3Variants) {
         X
       }
     }
@@ -376,9 +385,7 @@ mod tests {
 
     // public singleton enum
     enum_unitary!{
-      #[derive(Copy,Clone,Debug,Eq,PartialEq,NextVariant!,PrevVariant!,
-        IterVariants!(Myenum4Variants))]
-      pub enum Myenum4 {
+      enum Myenum4 (Myenum4Variants) {
         X
       }
     }
