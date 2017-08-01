@@ -279,7 +279,7 @@ macro_rules! enum_unitary {
 pub trait EnumUnitary :
   Clone + num::Bounded + num::ToPrimitive + num::FromPrimitive
 {
-  type IteratorType;
+  type IteratorType : Iterator;
   fn count_variants() -> usize;
   fn iter_variants() -> Self::IteratorType;
   //TODO: expose more methods from enum_derive ?
