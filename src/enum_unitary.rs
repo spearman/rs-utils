@@ -68,14 +68,14 @@ macro_rules! enum_unitary {
 
     impl num::ToPrimitive for $enum {
       fn to_i64 (&self) -> Option <i64> {
-        Some (*self as i64)
+        Some (self.clone() as i64)
       }
       fn to_u64 (&self) -> Option <u64> {
-        Some (*self as u64)
+        Some (self.clone() as u64)
       }
     }
 
-    impl EnumUnitary for $enum {
+    impl rs_utils::EnumUnitary for $enum {
       fn count_variants() -> usize {
         Self::count()
       }
@@ -126,14 +126,14 @@ macro_rules! enum_unitary {
 
     impl num::ToPrimitive for $enum {
       fn to_i64 (&self) -> Option <i64> {
-        Some (*self as i64)
+        Some (self.clone() as i64)
       }
       fn to_u64 (&self) -> Option <u64> {
-        Some (*self as u64)
+        Some (self.clone() as u64)
       }
     }
 
-    impl EnumUnitary for $enum {
+    impl rs_utils::EnumUnitary for $enum {
       fn count_variants() -> usize {
         Self::count()
       }
@@ -185,14 +185,14 @@ macro_rules! enum_unitary {
 
     impl num::ToPrimitive for $enum {
       fn to_i64 (&self) -> Option <i64> {
-        Some (*self as i64)
+        Some (self.clone() as i64)
       }
       fn to_u64 (&self) -> Option <u64> {
-        Some (*self as u64)
+        Some (self.clone() as u64)
       }
     }
 
-    impl EnumUnitary for $enum {
+    impl rs_utils::EnumUnitary for $enum {
       fn count_variants() -> usize {
         Self::count()
       }
@@ -241,14 +241,14 @@ macro_rules! enum_unitary {
 
     impl num::ToPrimitive for $enum {
       fn to_i64 (&self) -> Option <i64> {
-        Some (*self as i64)
+        Some (self.clone() as i64)
       }
       fn to_u64 (&self) -> Option <u64> {
-        Some (*self as u64)
+        Some (self.clone() as u64)
       }
     }
 
-    impl EnumUnitary for $enum {
+    impl rs_utils::EnumUnitary for $enum {
       fn count_variants() -> usize {
         Self::count()
       }
@@ -267,13 +267,16 @@ macro_rules! enum_unitary {
 //
 //  trait EnumUnitary
 //
-pub trait EnumUnitary : num::Bounded + num::ToPrimitive + num::FromPrimitive {
+pub trait EnumUnitary :
+  Clone + num::Bounded + num::ToPrimitive + num::FromPrimitive
+{
   fn count_variants() -> usize;
 }
 
 #[cfg(test)]
 mod tests {
   extern crate num;
+  use ::enum_unitary as rs_utils;
 
   #[test]
   fn test_unit() {

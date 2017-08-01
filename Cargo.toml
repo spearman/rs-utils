@@ -1,6 +1,6 @@
 [package]
 name = "rs-utils"
-version = "0.4.1"
+version = "0.4.2"
 authors = ["Shane Pearman <spearman@github.com>"]
 
 [dependencies]

@@ -18,3 +18,5 @@
 pub mod enum_unitary;
 pub mod file;
 pub mod process;
+
+pub use enum_unitary::EnumUnitary;
