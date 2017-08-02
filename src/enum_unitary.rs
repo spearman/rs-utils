@@ -66,12 +66,11 @@ macro_rules! enum_unitary {
     }
 
     impl rs_utils::EnumUnitary for $enum {
-      type IteratorType = $iter;
       fn count_variants() -> usize {
         Self::count()
       }
-      fn iter_variants() -> Self::IteratorType {
-        Self::iter_variants()
+      fn iter_variants() -> Box <Iterator <Item=Self>> {
+        Box::new (Self::iter_variants())
       }
     }
 
@@ -129,12 +128,11 @@ macro_rules! enum_unitary {
     }
 
     impl rs_utils::EnumUnitary for $enum {
-      type IteratorType = $iter;
       fn count_variants() -> usize {
         Self::count()
       }
-      fn iter_variants() -> Self::IteratorType {
-        Self::iter_variants()
+      fn iter_variants() -> Box <Iterator <Item=Self>> {
+        Box::new (Self::iter_variants())
       }
     }
 
@@ -193,12 +191,11 @@ macro_rules! enum_unitary {
     }
 
     impl rs_utils::EnumUnitary for $enum {
-      type IteratorType = $iter;
       fn count_variants() -> usize {
         Self::count()
       }
-      fn iter_variants() -> Self::IteratorType {
-        Self::iter_variants()
+      fn iter_variants() -> Box <(Iterator <Item=Self>)> {
+        Box::new (Self::iter_variants())
       }
     }
 
@@ -254,12 +251,11 @@ macro_rules! enum_unitary {
     }
 
     impl rs_utils::EnumUnitary for $enum {
-      type IteratorType = $iter;
       fn count_variants() -> usize {
         Self::count()
       }
-      fn iter_variants() -> Self::IteratorType {
-        Self::iter_variants()
+      fn iter_variants() -> Box <Iterator <Item=Self>> {
+        Box::new (Self::iter_variants())
       }
     }
 
@@ -276,13 +272,13 @@ macro_rules! enum_unitary {
 //
 //  trait EnumUnitary
 //
+// TODO: expose more constraints ?
 pub trait EnumUnitary :
   Clone + num::Bounded + num::ToPrimitive + num::FromPrimitive
 {
-  type IteratorType : Iterator;
   fn count_variants() -> usize;
-  fn iter_variants() -> Self::IteratorType;
-  //TODO: expose more methods from enum_derive ?
+  fn iter_variants() -> Box <Iterator <Item=Self>>;
+  // TODO: expose more methods from enum_derive ?
 }
 
 //
