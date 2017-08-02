@@ -273,8 +273,8 @@ macro_rules! enum_unitary {
 //  trait EnumUnitary
 //
 // TODO: expose more constraints ?
-pub trait EnumUnitary :
-  Clone + num::Bounded + num::ToPrimitive + num::FromPrimitive
+pub trait EnumUnitary : Copy + Clone + Eq + PartialEq + Send + Sync
+  + num::Bounded + num::ToPrimitive + num::FromPrimitive
 {
   fn count_variants() -> usize;
   fn iter_variants() -> Box <Iterator <Item=Self>>;
