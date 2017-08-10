@@ -145,10 +145,28 @@ macro_rules! enum_unitary {
   };
 
   //
-  //  2 or more variants: minimal syntax (;)
+  //  2 or more variants
   //
   (
-    enum $enum:ident ($iter:ident) { $min:ident$(, $variant:ident)*; $max:ident }
+    enum $enum:ident ($iter:ident) { $first:ident$(, $variant:ident)+ }
+  ) => {
+    enum_unitary!{
+      enum $enum ($iter) {$first} {$($variant),+}
+    }
+  };
+
+  (
+    enum $enum:ident ($iter:ident)
+      {$($variant:ident),+} {$more:ident$(, $tail:ident)+}
+  ) => {
+    enum_unitary!{
+      enum $enum ($iter) {$($variant,)+ $more} {$($tail),+}
+    }
+  };
+
+  (
+    enum $enum:ident ($iter:ident)
+      {$min:ident$(, $variant:ident)*} {$max:ident}
   ) => {
 
     macro_attr!{
@@ -298,7 +316,7 @@ mod tests {
     // private enum
     enum_unitary!{
       enum Myenum1 (Myenum1Variants) {
-        A, B; C
+        A, B, C
       }
     }
     assert_eq!(Myenum1::count(), 3);
@@ -330,7 +348,7 @@ mod tests {
     // public enum
     enum_unitary!{
       enum Myenum2 (Myenum2Variants) {
-        A, B; C
+        A, B, C
       }
     }
     assert_eq!(Myenum2::count(), 3);
