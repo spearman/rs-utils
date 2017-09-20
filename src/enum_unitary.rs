@@ -1,5 +1,7 @@
 extern crate num;
 
+use ::std;
+
 //
 //  enum_unitary!
 //
@@ -18,14 +20,14 @@ extern crate num;
 #[macro_export]
 macro_rules! enum_unitary {
   //
-  //  singleton
+  //  singleton: private
   //
   (
     enum $enum:ident ($iter:ident) { $singleton:ident }
   ) => {
 
     macro_attr!{
-      #[derive (Clone,Copy,Debug,Eq,PartialEq,
+      #[derive (Clone,Copy,Debug,Eq,PartialEq,Ord,PartialOrd,
         IterVariants!($iter),NextVariant!,PrevVariant!)]
       enum $enum {
         $singleton=0
@@ -82,12 +84,15 @@ macro_rules! enum_unitary {
 
   };
 
+  //
+  //  singleton: public
+  //
   (
     pub enum $enum:ident ($iter:ident) { $singleton:ident }
   ) => {
 
     macro_attr!{
-      #[derive (Clone,Copy,Debug,Eq,PartialEq,
+      #[derive (Clone,Copy,Debug,Eq,PartialEq,Ord,PartialOrd,
         IterVariants!($iter),NextVariant!,PrevVariant!)]
       pub enum $enum {
         $singleton=0
@@ -145,7 +150,7 @@ macro_rules! enum_unitary {
   };
 
   //
-  //  2 or more variants
+  //  2 or more variants: private
   //
   (
     enum $enum:ident ($iter:ident) { $first:ident$(, $variant:ident)+ }
@@ -170,7 +175,7 @@ macro_rules! enum_unitary {
   ) => {
 
     macro_attr!{
-      #[derive (Clone,Copy,Debug,Eq,PartialEq,
+      #[derive (Clone,Copy,Debug,Eq,PartialEq,Ord,PartialOrd,
         IterVariants!($iter),NextVariant!,PrevVariant!)]
       enum $enum {
         $min=0$(, $variant)*, $max
@@ -225,12 +230,33 @@ macro_rules! enum_unitary {
 
   };
 
+  //
+  //  2 or more variants: public
+  //
   (
-    pub enum $enum:ident ($iter:ident) { $min:ident$(, $variant:ident)*; $max:ident }
+    pub enum $enum:ident ($iter:ident) { $first:ident$(, $variant:ident)+ }
+  ) => {
+    enum_unitary!{
+      pub enum $enum ($iter) {$first} {$($variant),+}
+    }
+  };
+
+  (
+    pub enum $enum:ident ($iter:ident)
+      {$($variant:ident),+} {$more:ident$(, $tail:ident)+}
+  ) => {
+    enum_unitary!{
+      pub enum $enum ($iter) {$($variant,)+ $more} {$($tail),+}
+    }
+  };
+
+  (
+    pub enum $enum:ident ($iter:ident)
+      {$min:ident$(, $variant:ident)*} {$max:ident}
   ) => {
 
     macro_attr!{
-      #[derive (Clone,Copy,Debug,Eq,PartialEq,
+      #[derive (Clone,Copy,Debug,Eq,PartialEq,Ord,PartialOrd,
         IterVariants!($iter),NextVariant!,PrevVariant!)]
       pub enum $enum {
         $min=0$(, $variant)*, $max
@@ -291,7 +317,8 @@ macro_rules! enum_unitary {
 //  trait EnumUnitary
 //
 // TODO: expose more constraints ?
-pub trait EnumUnitary : Copy + Clone + Eq + PartialEq + Send + Sync
+pub trait EnumUnitary : Copy + Clone + Eq + Ord + PartialEq + PartialOrd
+  + Send + Sync + std::fmt::Debug
   + num::Bounded + num::ToPrimitive + num::FromPrimitive
 {
   fn count_variants() -> usize;
