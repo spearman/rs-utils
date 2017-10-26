@@ -4,7 +4,6 @@
 #![feature(custom_attribute)]
 #![feature(const_fn)]
 
-#[macro_use] extern crate unwrap;
 #[macro_use] extern crate lazy_static;
 
 #[cfg(test)]

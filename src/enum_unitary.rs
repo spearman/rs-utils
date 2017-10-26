@@ -444,4 +444,4 @@ mod tests {
     assert_eq!(Myenum4::X.next_variant(), None);
     assert_eq!(Myenum4::X.prev_variant(), None);
   }
-}
+} // end mod tests

@@ -14,7 +14,7 @@ extern crate std;
 pub fn file_new_append_incremental (file_path : &std::path::Path)
   -> Result <std::fs::File, std::io::Error>
 {
-  let file_name = try!{ file_path_incremental (file_path) };
+  let file_name = try!(file_path_incremental (file_path));
   file_new_append (file_name.as_path())
 }
 
@@ -60,17 +60,15 @@ pub fn file_new_append_incremental (file_path : &std::path::Path)
 pub fn file_new_append (file_path : &std::path::Path)
   -> Result <std::fs::File, std::io::Error>
 {
-  if !try!{ is_file (file_path) } {
+  if !try!(is_file (file_path)) {
     return Err (std::io::Error::new (std::io::ErrorKind::InvalidInput,
       "not a file".to_string()))
   }
 
-  let dir = file_path.parent().unwrap_or (std::path::Path::new (""));
-  try!{ std::fs::create_dir_all (dir) };
+  let dir = file_path.parent().unwrap_or_else (|| std::path::Path::new (""));
+  try!(std::fs::create_dir_all (dir));
 
-  std::fs::OpenOptions::new().append (true).create_new (true)
-    .open (file_path)
-
+  std::fs::OpenOptions::new().append (true).create_new (true).open (file_path)
 } // end file_new_append
 
 //
@@ -110,10 +108,9 @@ pub fn file_new_append (file_path : &std::path::Path)
 pub fn file_path_incremental (file_path : &std::path::Path)
   -> Result <std::path::PathBuf, std::io::Error>
 {
-  if !try!{ is_file (file_path) } {
+  if !try!(is_file (file_path)) {
     return Err (std::io::Error::new (
-      std::io::ErrorKind::InvalidInput,
-      "not a file".to_string()))
+      std::io::ErrorKind::InvalidInput, "not a file".to_string()))
   }
 
   // unwrap failure should have been caught by `is_file` test
@@ -122,13 +119,12 @@ pub fn file_path_incremental (file_path : &std::path::Path)
   ).to_str().unwrap_or_else (
     || panic!("fatal: `file_path.file_name()` \
       returned invalid os str: {:?}", file_path.file_name()));
-  let dir = file_path.parent().unwrap_or (
-    std::path::Path::new (""));
+  let dir = file_path.parent().unwrap_or_else (|| std::path::Path::new (""));
   for i in 0.. {
     let name = String::from (file_name) + &format!(".{}", i);
     let fp   = dir.join (name);
     if !fp.exists() {
-      return Ok(fp)
+      return Ok (fp)
     }
   }
   unreachable!("fatal: incremental file name loop should have returned")
@@ -168,24 +164,21 @@ pub fn file_path_incremental (file_path : &std::path::Path)
 /// assert_eq!(e.description(), "not valid unicode");
 /// ```
 
-pub fn is_file (file_path : &std::path::Path)
-  -> Result <bool, std::io::Error>
-{
+pub fn is_file (file_path : &std::path::Path) -> Result <bool, std::io::Error> {
   let s = try!{
     file_path.to_str().ok_or (std::io::Error::new (
-      std::io::ErrorKind::InvalidInput,
-      "not valid unicode".to_string()))
+      std::io::ErrorKind::InvalidInput, "not valid unicode".to_string()))
   };
 
   if s.ends_with (std::path::MAIN_SEPARATOR) {
-    return Ok(false)
+    return Ok (false)
   }
 
   if let None = std::path::Path::new (file_path).file_name() {
-    return Ok(false)
+    return Ok (false)
   }
 
-  Ok(true)
+  Ok (true)
 } //  end is_file
 
 //
@@ -210,7 +203,7 @@ mod tests {
     -> quickcheck::TestResult
   {
     let file_path = std::path::Path::new (file_path.as_str());
-    if !unwrap!{ is_file (file_path) } {
+    if !is_file (file_path).unwrap() {
       return quickcheck::TestResult::discard()
     }
     if let Some (s) = file_path.parent() {
@@ -231,4 +224,4 @@ mod tests {
     )
   }
 
-}
+} // end mod tests
