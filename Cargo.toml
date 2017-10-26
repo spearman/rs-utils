@@ -2,7 +2,7 @@
 name = "rs-utils"
 version = "0.0.4"
 authors = ["Shane Pearman <spearman@github.com>"]
-license = "BSD-3-Clause"
+license = "Apache-2.0"
 
 [dependencies]
 lazy_static = "0.2.*"
