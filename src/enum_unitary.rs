@@ -20,6 +20,136 @@ use ::std;
 #[macro_export]
 macro_rules! enum_unitary {
   //
+  //  nullary: private
+  //
+  (
+    enum $enum:ident ($iter:ident) { }
+  ) => {
+
+    macro_attr!{
+      #[derive (Clone,Copy,Debug,Eq,PartialEq,Ord,PartialOrd,
+        IterVariants!($iter),NextVariant!,PrevVariant!)]
+      enum $enum {
+        Void = std::isize::MAX
+      }
+    }
+
+    impl num::Bounded for $enum {
+      fn min_value() -> Self {
+        $enum::Void
+      }
+      fn max_value() -> Self {
+        $enum::Void
+      }
+    }
+
+    impl num::FromPrimitive for $enum {
+      fn from_i64 (x : i64) -> Option <Self> {
+        match x as isize {
+          std::isize::MAX => Some ($enum::Void),
+          _ => None
+        }
+      }
+      fn from_u64 (x: u64) -> Option <Self> {
+        match x as isize {
+          std::isize::MAX => Some ($enum::Void),
+          _ => None
+        }
+      }
+    }
+
+    impl num::ToPrimitive for $enum {
+      fn to_i64 (&self) -> Option <i64> {
+        Some (self.clone() as i64)
+      }
+      fn to_u64 (&self) -> Option <u64> {
+        Some (self.clone() as u64)
+      }
+    }
+
+    impl rs_utils::EnumUnitary for $enum {
+      fn count_variants() -> usize {
+        Self::count()
+      }
+      fn iter_variants() -> Box <Iterator <Item=Self>> {
+        Box::new (Self::iter_variants())
+      }
+    }
+
+    impl $enum {
+      const fn count() -> usize {
+        0
+      }
+    }
+
+  };
+
+  //
+  //  nullary: public
+  //
+  (
+    pub enum $enum:ident ($iter:ident) { }
+  ) => {
+
+    macro_attr!{
+      #[derive (Clone,Copy,Debug,Eq,PartialEq,Ord,PartialOrd,
+        IterVariants!($iter),NextVariant!,PrevVariant!)]
+      pub enum $enum {
+        Void = std::isize::MAX
+      }
+    }
+
+    impl num::Bounded for $enum {
+      fn min_value() -> Self {
+        $enum::Void
+      }
+      fn max_value() -> Self {
+        $enum::Void
+      }
+    }
+
+    impl num::FromPrimitive for $enum {
+      fn from_i64 (x : i64) -> Option <Self> {
+        match x as isize {
+          std::isize::MAX => Some ($enum::Void),
+          _ => None
+        }
+      }
+      fn from_u64 (x: u64) -> Option <Self> {
+        match x as isize {
+          std::isize::MAX => Some ($enum::Void),
+          _ => None
+        }
+      }
+    }
+
+    impl num::ToPrimitive for $enum {
+      fn to_i64 (&self) -> Option <i64> {
+        Some (self.clone() as i64)
+      }
+      fn to_u64 (&self) -> Option <u64> {
+        Some (self.clone() as u64)
+      }
+    }
+
+    impl rs_utils::EnumUnitary for $enum {
+      fn count_variants() -> usize {
+        Self::count()
+      }
+      fn iter_variants() -> Box <Iterator <Item=Self>> {
+        Box::new (Self::iter_variants())
+      }
+    }
+
+    impl $enum {
+      const fn count() -> usize {
+        0
+      }
+    }
+
+  };
+
+  //
   //  singleton: private
   //
   (
@@ -332,6 +462,7 @@ pub trait EnumUnitary : Copy + Clone + Eq + Ord + PartialEq + PartialOrd
 #[cfg(test)]
 mod tests {
   extern crate num;
+  use ::std;
   use ::enum_unitary as rs_utils;
 
   #[test]
@@ -374,7 +505,7 @@ mod tests {
 
     // public enum
     enum_unitary!{
-      enum Myenum2 (Myenum2Variants) {
+      pub enum Myenum2 (Myenum2Variants) {
         A, B, C
       }
     }
@@ -426,7 +557,7 @@ mod tests {
 
     // public singleton enum
     enum_unitary!{
-      enum Myenum4 (Myenum4Variants) {
+      pub enum Myenum4 (Myenum4Variants) {
         X
       }
     }
@@ -443,5 +574,43 @@ mod tests {
     assert_eq!(i.next(), None);
     assert_eq!(Myenum4::X.next_variant(), None);
     assert_eq!(Myenum4::X.prev_variant(), None);
+
+    // private nullary enum
+    enum_unitary!{
+      enum Myenum5 (Myenum5Variants) { }
+    }
+    assert_eq!(Myenum5::count(), 1);
+    assert_eq!(Myenum5::count_variants(), 1);
+    assert_eq!(Myenum5::Void as isize, std::isize::MAX);
+    assert_eq!(Some (Myenum5::Void),
+      Myenum5::from_usize (std::isize::MAX as usize));
+    assert_eq!(None, Myenum5::from_usize (0));
+    assert_eq!(Some (std::isize::MAX as usize), Myenum5::Void.to_usize());
+    assert_eq!(Myenum5::min_value(), Myenum5::Void);
+    assert_eq!(Myenum5::max_value(), Myenum5::Void);
+    let mut i = Myenum5::iter_variants();
+    assert_eq!(i.next(), Some (Myenum5::Void));
+    assert_eq!(i.next(), None);
+    assert_eq!(Myenum5::Void.next_variant(), None);
+    assert_eq!(Myenum5::Void.prev_variant(), None);
+
+    // public nullary enum
+    enum_unitary!{
+      pub enum Myenum6 (Myenum6Variants) { }
+    }
+    assert_eq!(Myenum6::count(), 1);
+    assert_eq!(Myenum6::count_variants(), 1);
+    assert_eq!(Myenum6::Void as isize, std::isize::MAX);
+    assert_eq!(Some (Myenum6::Void),
+      Myenum6::from_usize (std::isize::MAX as usize));
+    assert_eq!(None, Myenum6::from_usize (0));
+    assert_eq!(Some (std::isize::MAX as usize), Myenum6::Void.to_usize());
+    assert_eq!(Myenum6::min_value(), Myenum6::Void);
+    assert_eq!(Myenum6::max_value(), Myenum6::Void);
+    let mut i = Myenum6::iter_variants();
+    assert_eq!(i.next(), Some (Myenum6::Void));
+    assert_eq!(i.next(), None);
+    assert_eq!(Myenum6::Void.next_variant(), None);
+    assert_eq!(Myenum6::Void.prev_variant(), None);
   }
 } // end mod tests
