@@ -74,7 +74,7 @@ pub fn file_new_append (file_path : &std::path::Path)
 //
 //  file_path_incremental
 //
-/// Returns the file path appended with suffix `.N` where `N` gives
+/// Returns the file path appended with suffix `-N` where `N` gives
 /// the first available non-pre-existing filename starting from `0`.
 ///
 /// This function only queries for the next available filename, no
@@ -88,7 +88,7 @@ pub fn file_new_append (file_path : &std::path::Path)
 /// let file_path = Path::new ("somedir/somefile");
 /// assert_eq!(
 ///   file_path_incremental (file_path).unwrap().to_str().unwrap(),
-///   "somedir/somefile.0"
+///   "somedir/somefile-0"
 /// );
 /// ```
 
@@ -121,7 +121,7 @@ pub fn file_path_incremental (file_path : &std::path::Path)
       returned invalid os str: {:?}", file_path.file_name()));
   let dir = file_path.parent().unwrap_or_else (|| std::path::Path::new (""));
   for i in 0.. {
-    let name = String::from (file_name) + &format!(".{}", i);
+    let name = String::from (file_name) + &format!("-{}", i);
     let fp   = dir.join (name);
     if !fp.exists() {
       return Ok (fp)

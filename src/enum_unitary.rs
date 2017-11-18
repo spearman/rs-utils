@@ -579,8 +579,8 @@ mod tests {
     enum_unitary!{
       enum Myenum5 (Myenum5Variants) { }
     }
-    assert_eq!(Myenum5::count(), 1);
-    assert_eq!(Myenum5::count_variants(), 1);
+    assert_eq!(Myenum5::count(), 0);
+    assert_eq!(Myenum5::count_variants(), 0);
     assert_eq!(Myenum5::Void as isize, std::isize::MAX);
     assert_eq!(Some (Myenum5::Void),
       Myenum5::from_usize (std::isize::MAX as usize));
@@ -598,8 +598,8 @@ mod tests {
     enum_unitary!{
       pub enum Myenum6 (Myenum6Variants) { }
     }
-    assert_eq!(Myenum6::count(), 1);
-    assert_eq!(Myenum6::count_variants(), 1);
+    assert_eq!(Myenum6::count(), 0);
+    assert_eq!(Myenum6::count_variants(), 0);
     assert_eq!(Myenum6::Void as isize, std::isize::MAX);
     assert_eq!(Some (Myenum6::Void),
       Myenum6::from_usize (std::isize::MAX as usize));
