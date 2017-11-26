@@ -34,6 +34,27 @@ macro_rules! enum_unitary {
       }
     }
 
+    impl From <$enum> for isize {
+      fn from (x : $enum) -> Self {
+        x as isize
+      }
+    }
+    impl From <$enum> for usize {
+      fn from (x: $enum) -> Self {
+        x as usize
+      }
+    }
+    impl From <$enum> for i64 {
+      fn from (x : $enum) -> Self {
+        x as i64
+      }
+    }
+    impl From <$enum> for u64 {
+      fn from (x: $enum) -> Self {
+        x as u64
+      }
+    }
+
     impl num::Bounded for $enum {
       fn min_value() -> Self {
         $enum::Void
@@ -96,6 +117,27 @@ macro_rules! enum_unitary {
         IterVariants!($iter),NextVariant!,PrevVariant!)]
       pub enum $enum {
         Void = std::isize::MAX
+      }
+    }
+
+    impl From <$enum> for isize {
+      fn from (x : $enum) -> Self {
+        x as isize
+      }
+    }
+    impl From <$enum> for usize {
+      fn from (x: $enum) -> Self {
+        x as usize
+      }
+    }
+    impl From <$enum> for i64 {
+      fn from (x : $enum) -> Self {
+        x as i64
+      }
+    }
+    impl From <$enum> for u64 {
+      fn from (x: $enum) -> Self {
+        x as u64
       }
     }
 
@@ -164,6 +206,27 @@ macro_rules! enum_unitary {
       }
     }
 
+    impl From <$enum> for isize {
+      fn from (x : $enum) -> Self {
+        x as isize
+      }
+    }
+    impl From <$enum> for usize {
+      fn from (x: $enum) -> Self {
+        x as usize
+      }
+    }
+    impl From <$enum> for i64 {
+      fn from (x : $enum) -> Self {
+        x as i64
+      }
+    }
+    impl From <$enum> for u64 {
+      fn from (x: $enum) -> Self {
+        x as u64
+      }
+    }
+
     impl num::Bounded for $enum {
       fn min_value() -> Self {
         $enum::$singleton
@@ -226,6 +289,27 @@ macro_rules! enum_unitary {
         IterVariants!($iter),NextVariant!,PrevVariant!)]
       pub enum $enum {
         $singleton=0
+      }
+    }
+
+    impl From <$enum> for isize {
+      fn from (x : $enum) -> Self {
+        x as isize
+      }
+    }
+    impl From <$enum> for usize {
+      fn from (x: $enum) -> Self {
+        x as usize
+      }
+    }
+    impl From <$enum> for i64 {
+      fn from (x : $enum) -> Self {
+        x as i64
+      }
+    }
+    impl From <$enum> for u64 {
+      fn from (x: $enum) -> Self {
+        x as u64
       }
     }
 
@@ -312,6 +396,27 @@ macro_rules! enum_unitary {
       }
     }
 
+    impl From <$enum> for isize {
+      fn from (x : $enum) -> Self {
+        x as isize
+      }
+    }
+    impl From <$enum> for usize {
+      fn from (x: $enum) -> Self {
+        x as usize
+      }
+    }
+    impl From <$enum> for i64 {
+      fn from (x : $enum) -> Self {
+        x as i64
+      }
+    }
+    impl From <$enum> for u64 {
+      fn from (x: $enum) -> Self {
+        x as u64
+      }
+    }
+
     impl num::Bounded for $enum {
       fn min_value() -> Self {
         $enum::$min
@@ -393,6 +498,27 @@ macro_rules! enum_unitary {
       }
     }
 
+    impl From <$enum> for isize {
+      fn from (x : $enum) -> Self {
+        x as isize
+      }
+    }
+    impl From <$enum> for usize {
+      fn from (x: $enum) -> Self {
+        x as usize
+      }
+    }
+    impl From <$enum> for i64 {
+      fn from (x : $enum) -> Self {
+        x as i64
+      }
+    }
+    impl From <$enum> for u64 {
+      fn from (x: $enum) -> Self {
+        x as u64
+      }
+    }
+
     impl num::Bounded for $enum {
       fn min_value() -> Self {
         $enum::$min
@@ -449,6 +575,11 @@ macro_rules! enum_unitary {
 // TODO: expose more constraints ?
 pub trait EnumUnitary : Copy + Clone + Eq + Ord + PartialEq + PartialOrd
   + Send + Sync + std::fmt::Debug
+  // NB: as of Rust 1.22, the *last* of the following `Into` constraints
+  // seems to be chosen by default and using `.into` for one of the other
+  // types requires using disambiguation syntax; we choose `usize` here since
+  // it is the index type of `vec_map::VecMap`s
+  + Into <i64> + Into <u64> + Into <isize> + Into <usize>
   + num::Bounded + num::ToPrimitive + num::FromPrimitive
 {
   fn count_variants() -> usize;
