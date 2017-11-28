@@ -131,6 +131,42 @@ pub fn file_path_incremental (file_path : &std::path::Path)
 } // end file_path_incremental
 
 //
+//  file_path_incremental_with_extension
+//
+/// Like file path incremental but preserves the file extension if one is
+/// present.
+
+pub fn file_path_incremental_with_extension (file_path : &std::path::Path)
+  -> Result <std::path::PathBuf, std::io::Error>
+{
+  if !try!(is_file (file_path)) {
+    return Err (std::io::Error::new (
+      std::io::ErrorKind::InvalidInput, "not a file".to_string()))
+  }
+
+  if file_path.extension().is_none() {
+    return file_path_incremental (file_path)
+  }
+  let extension = file_path.extension().unwrap().to_str().unwrap();
+
+  // unwrap failure should have been caught by `is_file` test
+  let file_stem = file_path.file_stem().unwrap_or_else (
+    || panic!("fatal: path should be a valid file")
+  ).to_str().unwrap_or_else (
+    || panic!("fatal: `file_path.file_name()` \
+      returned invalid os str: {:?}", file_path.file_name()));
+  let dir = file_path.parent().unwrap_or_else (|| std::path::Path::new (""));
+  for i in 0.. {
+    let name = &format!("{}-{}.{}", file_stem, i, extension);
+    let fp   = dir.join (name);
+    if !fp.exists() {
+      return Ok (fp)
+    }
+  }
+  unreachable!("fatal: incremental file name loop should have returned")
+} // end file_path_incremental_with_extension
+
+//
 //  is_file
 //
 /// If this returns true then `std::fs::File::create` will not fail
