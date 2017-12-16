@@ -1,3 +1,5 @@
+//! Numeric utilities.
+
 use ::std;
 
 /// Returns the minimum of two partially ordered values, returning the rhs when

@@ -1,3 +1,5 @@
+//! Miscellaneous Rust utilities.
+
 #![cfg_attr(test, feature(plugin))]
 #![cfg_attr(test, plugin(quickcheck_macros))]
 

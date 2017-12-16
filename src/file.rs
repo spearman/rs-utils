@@ -1,4 +1,6 @@
-extern crate std;
+//! File utilities.
+
+use ::std;
 
 //
 //  file_new_append_incremental
