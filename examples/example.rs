@@ -14,29 +14,19 @@ fn main () {
   let file_path = file_path.as_path();
 
   println!("file_path_incremental \"{}\": {}", file_path.display(),
-    unwrap!{
-      rs_utils::file::file_path_incremental (file_path)
-    }.display()
+    unwrap!{ rs_utils::file::file_path_incremental (file_path) }.display()
   );
   println!("file_new_append_incremental \"{}\"...", file_path.display());
-  unwrap!{
-    rs_utils::file::file_new_append_incremental (file_path)
-  };
+  unwrap!{ rs_utils::file::file_new_append_incremental (file_path) };
 
   println!("file_path_incremental \"{}\": {}", file_path.display(),
-    unwrap!{
-      rs_utils::file::file_path_incremental (file_path)
-    }.display()
+    unwrap!{ rs_utils::file::file_path_incremental (file_path) }.display()
   );
   println!("file_new_append_incremental \"{}\"...", file_path.display());
-  unwrap!{
-    rs_utils::file::file_new_append_incremental (file_path)
-  };
+  unwrap!{ rs_utils::file::file_new_append_incremental (file_path) };
 
   println!("file_path_incremental \"{}\": {}", file_path.display(),
-    unwrap!{
-      rs_utils::file::file_path_incremental (file_path)
-    }.display()
+    unwrap!{ rs_utils::file::file_path_incremental (file_path) }.display()
   );
   println!("file_path_incremental and then file_new_append \"{}\"...",
     file_path.display()
