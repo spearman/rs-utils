@@ -8,7 +8,7 @@ license = "Apache-2.0"
 lazy_static = "1.*"
 
 [dev-dependencies]
-quickcheck = "0.4.*"
-quickcheck_macros = "0.4.*"
+quickcheck = "0.6.*"
+quickcheck_macros = "0.6.*"
 tempdir = "0.3.*"
 unwrap = "1.*"
