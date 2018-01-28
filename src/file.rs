@@ -14,10 +14,11 @@ use ::std;
 /// - Not a file (&#x261e; see [`file_path_incremental`](fn.file_path_incremental.html))
 
 pub fn file_new_append_incremental (file_path : &std::path::Path)
-  -> Result <std::fs::File, std::io::Error>
+  -> Result <(std::path::PathBuf, std::fs::File), std::io::Error>
 {
-  let file_name = try!(file_path_incremental (file_path));
-  file_new_append (file_name.as_path())
+  let file_pathbuf = try!{ file_path_incremental (file_path) };
+  let file         = try!{ file_new_append (file_pathbuf.as_path()) };
+  Ok ((file_pathbuf, file))
 }
 
 //
