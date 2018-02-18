@@ -1,4 +1,4 @@
-//! Numeric utilities.
+//! Numeric utilities
 
 use ::std;
 

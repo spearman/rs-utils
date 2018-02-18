@@ -1,4 +1,4 @@
-//! File utilities.
+//! File utilities
 
 use ::std;
 

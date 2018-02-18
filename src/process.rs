@@ -1,4 +1,4 @@
-//! Process related utilities.
+//! Process related utilities
 
 use ::std;
 

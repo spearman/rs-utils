@@ -1,4 +1,6 @@
-//! Miscellaneous Rust utilities.
+//! Miscellaneous Rust utilities
+//!
+//! [Repository](https://github.com/spearman/rs-utils)
 
 #![cfg_attr(test, feature(plugin))]
 #![cfg_attr(test, plugin(quickcheck_macros))]
