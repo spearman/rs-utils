@@ -8,3 +8,5 @@ Modules:
 - `rs_utils::file`    -- File utilities
 - `rs_utils::numeric` -- Numeric utilities
 - `rs_utils::process` -- Process utilities
+
+[Documentation](https://spearman.github.io/rs-utils/rs_utils/index.html)
