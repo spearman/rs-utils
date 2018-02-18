@@ -7,8 +7,12 @@
 
 #[macro_use] extern crate lazy_static;
 
+extern crate generic_array;
+extern crate typenum;
+
 #[cfg(test)] extern crate quickcheck;
 
+pub mod array;
 pub mod file;
 pub mod numeric;
 pub mod process;
