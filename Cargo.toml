@@ -5,7 +5,7 @@ authors = ["Shane Pearman <spearman@github.com>"]
 license = "Apache-2.0"
 
 [dependencies]
-generic-array = "0.9.*"
+generic-array = "0.11.*"
 lazy_static = "1.*"
 typenum = "1.*"
 
