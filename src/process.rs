@@ -1,6 +1,6 @@
 //! Process related utilities
 
-use ::std;
+use {std};
 
 lazy_static! {
   /// A lazy static string loaded from the first element of `std::env::args()`

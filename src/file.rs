@@ -1,6 +1,6 @@
 //! File utilities
 
-use ::std;
+use {std};
 
 //
 //  file_new_append_incremental

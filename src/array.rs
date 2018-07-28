@@ -1,6 +1,6 @@
 //! Array utilities
 
-use ::{generic_array, typenum};
+use {generic_array, typenum};
 
 use typenum::consts::*;
 use generic_array::{GenericArray, sequence::GenericSequence};
