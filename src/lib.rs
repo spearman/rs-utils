@@ -15,6 +15,7 @@ extern crate typenum;
 
 #[cfg(test)] extern crate quickcheck;
 
+#[macro_use] pub mod macros;
 pub mod array;
 pub mod file;
 pub mod numeric;
