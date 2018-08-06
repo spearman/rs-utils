@@ -8,7 +8,7 @@
 #[macro_export]
 macro_rules! for_sequence {
   (
-    $pattern:pat in $($iter:expr),* $do:block
+    $pattern:pat in ($($iter:expr),+) $do:block
   ) => {
     $(for $pattern in $iter $do)+
   }
