@@ -8,9 +8,9 @@
 #[macro_export]
 macro_rules! for_sequence {
   (
-    $pattern:pat in $($collection:ident),* $do:block
+    $pattern:pat in $($iter:expr),* $do:block
   ) => {
-    $(for $pattern in $collection $do)+
+    $(for $pattern in $iter $do)+
   }
 }
 
