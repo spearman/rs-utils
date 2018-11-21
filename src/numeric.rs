@@ -1,17 +1,18 @@
 //! Numeric utilities
 
-use {std, rand};
+use {std, rand_xorshift};
 
 /// Create an XorShiftRng with a default seed.
 ///
 /// Previously this was possible with the deprecated `XorShiftRng::new_unseeded`
 /// method, this function uses the same seed as was used previously.
 /// ```
-/// # extern crate rand;
+/// # extern crate rand_core;
+/// # extern crate rand_xorshift;
 /// # extern crate rs_utils;
 /// # fn main() {
 /// # use rs_utils::numeric::xorshift_rng_unseeded;
-/// use rand::RngCore;
+/// use rand_core::RngCore;
 /// let mut xorshift = xorshift_rng_unseeded();
 /// let mut fill_bytes = [0u8; 16];
 /// xorshift.fill_bytes (&mut fill_bytes[..]);
@@ -23,9 +24,9 @@ use {std, rand};
 /// ]);
 /// # }
 /// ```
-pub fn xorshift_rng_unseeded() -> rand::prng::XorShiftRng {
-  use rand::SeedableRng;
-  rand::prng::XorShiftRng::from_seed ([
+pub fn xorshift_rng_unseeded() -> rand_xorshift::XorShiftRng {
+  use rand_core::SeedableRng;
+  rand_xorshift::XorShiftRng::from_seed ([
     0x19, 0x3a, 0x67, 0x54,
     0xa8, 0xa7, 0xd4, 0x69,
     0x97, 0x83, 0x0e, 0x05,
