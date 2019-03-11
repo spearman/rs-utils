@@ -5,7 +5,8 @@ extern crate tempdir;
 extern crate rs_utils;
 
 fn main () {
-  let exe_name = std::env::current_exe().unwrap();
+  let exe_name = std::env::current_exe().unwrap().file_name().unwrap()
+    .to_owned();
   println!("{:?} main...", exe_name);
 
   let temp_dir = unwrap!{ tempdir::TempDir::new_in ("examples", "tmp") };
