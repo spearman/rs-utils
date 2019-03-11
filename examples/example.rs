@@ -5,7 +5,8 @@ extern crate tempdir;
 extern crate rs_utils;
 
 fn main () {
-  println!("{} main...", *rs_utils::process::EXE_FILE_NAME);
+  let exe_name = std::env::current_exe().unwrap();
+  println!("{:?} main...", exe_name);
 
   let temp_dir = unwrap!{ tempdir::TempDir::new_in ("examples", "tmp") };
 
@@ -46,5 +47,5 @@ fn main () {
     }.success()
   };
 
-  println!("...{} main", *rs_utils::process::EXE_FILE_NAME);
+  println!("...{:?} main", exe_name);
 }

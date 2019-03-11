@@ -225,18 +225,17 @@ pub fn is_file (file_path : &std::path::Path) -> Result <bool, std::io::Error> {
 //
 #[cfg(test)]
 mod tests {
-  use ::file::*;
-  extern crate std;
-  extern crate quickcheck;
-  extern crate tempdir;
+  use {std, tempdir, quickcheck};
+  use quickcheck_macros::quickcheck;
+  use super::*;
 
   //
-  //  test_is_file
+  //  prop_is_file_implies_not_directory
   //
   // test that is_file() implies file creation will not give an "is a
   // directory" error: as of Rust 1.16 (2017-01-23) this error is
   // simply indicated by an ErrorKind::Other (other os error)
-  #[ignore]
+  #[ignore] // to run test use `cargo test -- --ignored`
   #[quickcheck]
   fn prop_is_file_implies_not_directory (file_path : String)
     -> quickcheck::TestResult
