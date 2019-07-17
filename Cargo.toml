@@ -5,9 +5,9 @@ authors = ["Shane Pearman <spearman@github.com>"]
 license = "Apache-2.0"
 
 [dependencies]
-generic-array = "0.12.*"
-rand_core = "0.4.*"
-rand_xorshift = "0.1.*"
+generic-array = "0.13.*"
+rand_core = "0.5.*"
+rand_xorshift = "0.2.*"
 typenum = "1.*"
 
 [dev-dependencies]
@@ -15,3 +15,4 @@ quickcheck = "0.8.*"
 quickcheck_macros = "0.8.*"
 tempdir = "0.3.*"
 unwrap = "1.*"
+rand = "0.7.*"
