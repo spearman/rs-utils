@@ -1,3 +1,7 @@
 /target/
 **/*.rs.bk
 Cargo.lock
+dependencies.dot
+dependencies.png
+modules.dot
+modules.png
