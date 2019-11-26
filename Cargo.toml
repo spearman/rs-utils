@@ -11,7 +11,7 @@ rand_xorshift = "0.2.*"
 typenum = "1.*"
 
 [dev-dependencies]
-quickcheck = "0.8.*"
+quickcheck = "0.9.*"
 quickcheck_macros = "0.8.*"
 tempdir = "0.3.*"
 unwrap = "1.*"

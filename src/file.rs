@@ -16,8 +16,8 @@ use {std};
 pub fn file_new_append_incremental (file_path : &std::path::Path)
   -> Result <(std::path::PathBuf, std::fs::File), std::io::Error>
 {
-  let file_pathbuf = try!{ file_path_incremental (file_path) };
-  let file         = try!{ file_new_append (file_pathbuf.as_path()) };
+  let file_pathbuf = file_path_incremental (file_path)?;
+  let file         = file_new_append (file_pathbuf.as_path())?;
   Ok ((file_pathbuf, file))
 }
 
@@ -63,13 +63,13 @@ pub fn file_new_append_incremental (file_path : &std::path::Path)
 pub fn file_new_append (file_path : &std::path::Path)
   -> Result <std::fs::File, std::io::Error>
 {
-  if !try!(is_file (file_path)) {
+  if !is_file (file_path)? {
     return Err (std::io::Error::new (std::io::ErrorKind::InvalidInput,
       "not a file".to_string()))
   }
 
   let dir = file_path.parent().unwrap_or_else (|| std::path::Path::new (""));
-  try!(std::fs::create_dir_all (dir));
+  std::fs::create_dir_all (dir)?;
 
   std::fs::OpenOptions::new().append (true).create_new (true).open (file_path)
 } // end file_new_append
@@ -111,7 +111,7 @@ pub fn file_new_append (file_path : &std::path::Path)
 pub fn file_path_incremental (file_path : &std::path::Path)
   -> Result <std::path::PathBuf, std::io::Error>
 {
-  if !try!(is_file (file_path)) {
+  if !is_file (file_path)? {
     return Err (std::io::Error::new (
       std::io::ErrorKind::InvalidInput, "not a file".to_string()))
   }
@@ -142,7 +142,7 @@ pub fn file_path_incremental (file_path : &std::path::Path)
 pub fn file_path_incremental_with_extension (file_path : &std::path::Path)
   -> Result <std::path::PathBuf, std::io::Error>
 {
-  if !try!(is_file (file_path)) {
+  if !is_file (file_path)? {
     return Err (std::io::Error::new (
       std::io::ErrorKind::InvalidInput, "not a file".to_string()))
   }
@@ -204,10 +204,8 @@ pub fn file_path_incremental_with_extension (file_path : &std::path::Path)
 /// ```
 
 pub fn is_file (file_path : &std::path::Path) -> Result <bool, std::io::Error> {
-  let s = try!{
-    file_path.to_str().ok_or (std::io::Error::new (
-      std::io::ErrorKind::InvalidInput, "not valid unicode".to_string()))
-  };
+  let s = file_path.to_str().ok_or (std::io::Error::new (
+    std::io::ErrorKind::InvalidInput, "not valid unicode".to_string()))?;
 
   if s.ends_with (std::path::MAIN_SEPARATOR) {
     return Ok (false)

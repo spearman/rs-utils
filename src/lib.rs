@@ -2,8 +2,6 @@
 //!
 //! [Repository](https://github.com/spearman/rs-utils)
 
-#![feature(custom_attribute)]
-
 extern crate generic_array;
 extern crate rand_core;
 extern crate rand_xorshift;
