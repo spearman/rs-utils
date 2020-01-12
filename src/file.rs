@@ -37,7 +37,7 @@ pub fn file_new_append_incremental (file_path : &std::path::Path)
 /// # use rs_utils::file::file_new_append;
 /// let e = file_new_append (Path::new ("somepath/")).err().unwrap();
 /// assert_eq!(e.kind(), ErrorKind::InvalidInput);
-/// assert_eq!(e.description(), "not a file");
+/// assert_eq!(&e.to_string(), "not a file");
 /// ```
 ///
 /// - File already exists:
