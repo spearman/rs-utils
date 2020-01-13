@@ -1,6 +1,5 @@
 #[macro_use] extern crate unwrap;
 
-extern crate rand;
 extern crate tempdir;
 
 extern crate rs_utils;
@@ -12,7 +11,6 @@ fn main () {
     .to_owned();
   println!("{:?} main...", exe_name);
 
-  println!("{}", String::from_utf8 (vec![b'#'; 80]).unwrap());
   println!("example: incrementally named files");
   let temp_dir = unwrap!{ tempdir::TempDir::new_in ("examples", "tmp") };
   let file_path = temp_dir.path().join (
@@ -43,13 +41,6 @@ fn main () {
         .status()
     }.success()
   };
-
-  println!("{}", String::from_utf8 (vec![b'#'; 80]).unwrap());
-  println!("example: default xorshift rng");
-  use rand::Rng;
-  let mut xorshiftrng = numeric::xorshift_rng_unseeded();
-  let b = xorshiftrng.gen::<u8>();
-  println!("b: {:?}", b);
 
   println!("...{:?} main", exe_name);
 }
