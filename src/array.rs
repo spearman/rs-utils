@@ -1,9 +1,11 @@
 //! Array utilities
 
-use {generic_array, typenum};
+use generic_array;
+use generic_array::GenericArray;
+use generic_array::sequence::GenericSequence;
 
+use typenum;
 use typenum::consts::*;
-use generic_array::{GenericArray, sequence::GenericSequence};
 
 /// Create a new array from the first elements of an array of pairs of the same
 /// length as the first array.

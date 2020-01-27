@@ -5,58 +5,51 @@
 ///
 /// This is to avoid dynamic dispatch when chaining iterators over generic
 /// collections when the types are known.
-#[macro_export]
-macro_rules! for_sequence {
-  (
-    $pattern:pat in ($($iter:expr),+) $do:block
+pub macro for_sequence {
+  ( $pattern:pat in ($($iter:expr),+) $do:block
   ) => {
     $(for $pattern in $iter $do)+
   }
 }
 
 /// Print the stringified expression followed by its debug formatting
-#[macro_export]
-macro_rules! show {
+pub macro show {
   ($e:expr) => {
     println!("{}: {:?}", stringify!($e), $e);
   }
 }
 
 /// Print the stringified expression followed by its pretty debug formatting
-#[macro_export]
-macro_rules! pretty {
+pub macro pretty {
   ($e:expr) => {
     println!("{}: {:#?}", stringify!($e), $e);
   }
 }
 
 /// Print the stringified expression followed by its display formatting
-#[macro_export]
-macro_rules! display {
+pub macro display {
   ($e:expr) => {
     println!("{}: {}", stringify!($e), $e);
   }
 }
 
 /// Print the stringified expression followed by its bitstring formatting
-#[macro_export]
-macro_rules! bits {
+pub macro bits {
   ($e:expr) => {
-    println!("{}: {:b}", stringify!($e), $e);
+    let e = $e;
+    println!("{}: {:02$b}", stringify!($e), e, 8 * std::mem::size_of_val (&e));
   }
 }
 
 /// Print the stringified expression followed by its hexadecimal formatting
-#[macro_export]
-macro_rules! hex {
+pub macro hex {
   ($e:expr) => {
     println!("{}: {:x}", stringify!($e), $e);
   }
 }
 
 /// Print the stringified expression followed by its pointer formatting
-#[macro_export]
-macro_rules! address {
+pub macro address {
   ($e:expr) => {
     println!("{}: {:p}", stringify!($e), $e);
   }

@@ -1,6 +1,6 @@
 //! File utilities
 
-use {std};
+use std;
 
 //
 //  file_new_append_incremental
@@ -154,10 +154,9 @@ pub fn file_path_incremental_with_extension (file_path : &std::path::Path)
   let extension = file_path.extension().unwrap().to_str().unwrap();
 
   // unwrap failure should have been caught by `is_file` test
-  let file_stem = file_path.file_stem().unwrap_or_else (
-    || panic!("fatal: path should be a valid file")
-  ).to_str().unwrap_or_else (
-    || panic!("fatal: `file_path.file_name()` \
+  let file_stem = file_path.file_stem()
+    .unwrap_or_else (|| panic!("fatal: path should be a valid file")).to_str()
+    .unwrap_or_else (|| panic!("fatal: `file_path.file_name()` \
       returned invalid os str: {:?}", file_path.file_name()));
   let dir = file_path.parent().unwrap_or_else (|| std::path::Path::new (""));
   for i in 0.. {
@@ -224,8 +223,9 @@ pub fn is_file (file_path : &std::path::Path) -> Result <bool, std::io::Error> {
 //
 #[cfg(test)]
 mod tests {
-  use {std, tempdir, quickcheck};
-  use quickcheck_macros::quickcheck;
+  use std;
+  use tempdir;
+  use quickcheck;
   use super::*;
 
   //
@@ -235,7 +235,7 @@ mod tests {
   // error: as of Rust 1.16 (2017-01-23) this error is simply indicated by an
   // ErrorKind::Other (other os error)
   #[ignore] // to run test use `cargo test -- --ignored`
-  #[quickcheck]
+  #[quickcheck_macros::quickcheck]
   fn prop_is_file_implies_not_directory (file_path : String)
     -> quickcheck::TestResult
   {
