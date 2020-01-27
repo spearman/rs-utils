@@ -4,6 +4,7 @@
 
 Modules:
 
+- `rs_utils::app`     -- Application utilities
 - `rs_utils::array`   -- Array utilities
 - `rs_utils::file`    -- File utilities
 - `rs_utils::macros`  -- Utility macros
