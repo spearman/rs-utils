@@ -7,13 +7,13 @@ edition = "2018"
 
 [dependencies]
 clap = "2.*"
-generic-array = "0.13.*"
+generic-array = "0.14.*"
 log = "0.4.*"
-simplelog = "0.7.*"
+simplelog = "0.8.*"
 typenum = "1.*"
 
 [dev-dependencies]
 quickcheck = "0.9.*"
-quickcheck_macros = "0.8.*"
+quickcheck_macros = "0.9.*"
 tempdir = "0.3.*"
 unwrap = "1.*"
