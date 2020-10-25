@@ -8,8 +8,8 @@ use simplelog;
 /// Adds a `clap` argument named `"log-level"` with short name `"l"`,
 /// and value name `"LOG_LEVEL"`, suitable for passing a log level filter:
 ///
-/// ```ignore
-/// ./myapp -l Debug
+/// ```text
+/// $ ./myapp -l Debug
 /// ```
 pub fn clap_arg_log_level <'a, 'b> (app : clap::App <'a, 'b>)
   -> clap::App <'a, 'b>
