@@ -11,10 +11,11 @@ extern crate typenum;
 #[cfg(test)] extern crate quickcheck_macros;
 #[cfg(test)] extern crate tempdir;
 
-pub mod app;
 pub mod array;
 pub mod file;
 pub mod numeric;
 
 pub mod macros;
 pub use self::macros::*;
+
+#[cfg(feature = "app")] pub mod app;

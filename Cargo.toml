@@ -1,19 +1,24 @@
 [package]
 name = "rs-utils"
-version = "0.0.16"
+version = "0.0.17"
 authors = ["Shane Pearman <spearman@github.com>"]
 license = "Apache-2.0"
 edition = "2018"
 
+[features]
+app = ["clap", "log", "simplelog"]
+
 [dependencies]
-clap = "2.*"
 generic-array = "0.14.*"
-log = "0.4.*"
-simplelog = "0.8.*"
 typenum = "1.*"
+# optional
+clap = { version = "2.*", optional = true }
+log = { version = "0.4.*", optional = true }
+simplelog = { version = "0.8.*", optional = true }
 
 [dev-dependencies]
 quickcheck = "0.9.*"
 quickcheck_macros = "0.9.*"
+rs-utils = { version = "*", path = "./.", features = ["app"] }
 tempdir = "0.3.*"
 unwrap = "1.*"
