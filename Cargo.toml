@@ -17,8 +17,8 @@ log = { version = "0.4.*", optional = true }
 simplelog = { version = "0.8.*", optional = true }
 
 [dev-dependencies]
-quickcheck = "0.9.*"
-quickcheck_macros = "0.9.*"
+quickcheck = "1.*"
+quickcheck_macros = "1.*"
 rs-utils = { version = "*", path = "./.", features = ["app"] }
 tempdir = "0.3.*"
 unwrap = "1.*"
