@@ -20,5 +20,5 @@ simplelog = { version = "0.8.*", optional = true }
 quickcheck = "1.*"
 quickcheck_macros = "1.*"
 rs-utils = { version = "*", path = "./.", features = ["app"] }
-tempdir = "0.3.*"
+tempfile = "3.*"
 unwrap = "1.*"

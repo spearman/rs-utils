@@ -44,13 +44,13 @@ pub fn file_new_append_incremental (file_path : &std::path::Path)
 /// - File already exists:
 ///
 /// ```
-/// extern crate tempdir;
+/// extern crate tempfile;
 /// # extern crate rs_utils;
 /// # use std::error::Error; use std::io::ErrorKind; use std::path::Path;
 /// # use rs_utils::file::file_new_append;
 /// # fn main () {
 ///
-/// let temp_dir = tempdir::TempDir::new_in ("", "tmp").unwrap();
+/// let temp_dir = tempfile::Builder::new().prefix ("tmp").tempdir().unwrap();
 /// let file_path = temp_dir.path().join (Path::new ("somefile"));
 /// let file_path = file_path.as_path();
 /// assert! (!file_path.exists());
@@ -224,7 +224,7 @@ pub fn is_file (file_path : &std::path::Path) -> Result <bool, std::io::Error> {
 #[cfg(test)]
 mod tests {
   use std;
-  use tempdir;
+  use tempfile;
   use quickcheck;
   use super::*;
 
@@ -248,7 +248,7 @@ mod tests {
         return quickcheck::TestResult::discard()
       }
     }
-    let temp_dir = tempdir::TempDir::new_in ("", "tmp").unwrap();
+    let temp_dir  = tempfile::Builder::new().prefix ("tmp").tempdir().unwrap();
     let file_path = temp_dir.path().join (file_path);
     quickcheck::TestResult::from_bool (
       if let Err(e) = std::fs::OpenOptions::new()

@@ -9,7 +9,7 @@ extern crate typenum;
 
 #[cfg(test)] extern crate quickcheck;
 #[cfg(test)] extern crate quickcheck_macros;
-#[cfg(test)] extern crate tempdir;
+#[cfg(test)] extern crate tempfile;
 
 pub mod array;
 pub mod file;

@@ -1,6 +1,6 @@
 extern crate unwrap;
 
-extern crate tempdir;
+extern crate tempfile;
 
 extern crate rs_utils;
 
@@ -23,7 +23,8 @@ fn main () {
   log::info!("terminal logger initialized");
   // incremental files example
   log::info!("example: incrementally named files");
-  let temp_dir  = unwrap!(tempdir::TempDir::new_in ("examples", "tmp"));
+  let temp_dir  = unwrap!(
+    tempfile::Builder::new().prefix ("tmp").tempdir_in ("examples"));
   let file_path = temp_dir.path().join (Path::new ("myfile"));
   let path      = file_path.as_path();
   log::debug!("file_path_incremental\n  \"{}\":\n  {}",
