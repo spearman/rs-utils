@@ -1,9 +1,9 @@
 [package]
 name = "rs-utils"
-version = "0.0.17"
+version = "0.0.18"
 authors = ["Shane Pearman <spearman@github.com>"]
 license = "Apache-2.0"
-edition = "2018"
+edition = "2021"
 
 [features]
 app = ["clap", "log", "simplelog"]
@@ -12,9 +12,9 @@ app = ["clap", "log", "simplelog"]
 generic-array = "0.14.*"
 typenum = "1.*"
 # optional
-clap = { version = "2.*", optional = true }
+clap = { version = "3.*", optional = true }
 log = { version = "0.4.*", optional = true }
-simplelog = { version = "0.8.*", optional = true }
+simplelog = { version = "0.12.*", optional = true }
 
 [dev-dependencies]
 quickcheck = "1.*"

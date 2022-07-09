@@ -11,18 +11,16 @@ use simplelog;
 /// ```text
 /// $ ./myapp -l Debug
 /// ```
-pub fn clap_arg_log_level <'a, 'b> (app : clap::App <'a, 'b>)
-  -> clap::App <'a, 'b>
-{
+pub fn clap_arg_log_level <'a> (app : clap::App <'a>) -> clap::App <'a> {
   app.arg (clap::Arg::with_name ("log-level")
-    .short ("l")
+    .short ('l')
     .value_name ("LOG_LEVEL")
     .help ("Log level filter"))
 }
 
 /// Get the value of the `LOG_LEVEL` option and attempt to parse it as
 /// a `simplelog::LevelFilter`
-pub fn clap_opt_log_level <'a> (opts : &clap::ArgMatches <'a>)
+pub fn clap_opt_log_level (opts : &clap::ArgMatches)
   -> Result <Option <simplelog::LevelFilter>, log::ParseLevelError>
 {
   use std::str::FromStr;
@@ -48,7 +46,8 @@ pub fn init_simple_termlogger (log_level : simplelog::LevelFilter) {
       .set_target_level (simplelog::LevelFilter::Error) // module path
       .set_thread_level (simplelog::LevelFilter::Off)   // no thread numbers
       .build(),
-    simplelog::TerminalMode::Stdout
+    simplelog::TerminalMode::Stdout,
+    simplelog::ColorChoice::Auto
   ).unwrap();
 }
 
