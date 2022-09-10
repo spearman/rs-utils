@@ -1,53 +1,44 @@
-extern crate unwrap;
+//! `rs-utils` example
 
 extern crate tempfile;
-
 extern crate rs_utils;
 
 use std::path::Path;
-use unwrap::unwrap;
+use clap::Parser;
 use rs_utils::*;
 
 fn main () {
   println!("{:?} main...", app::exe_name());
 
-  // options
-  let opts = {
-    let opts = clap::App::new ("RsUtils Example App");
-    app::clap_arg_log_level (opts).get_matches()
-  };
-  // log init
-  let log_level = app::clap_opt_log_level (&opts).unwrap()
-    .unwrap_or (simplelog::LevelFilter::Debug);
-  app::init_simple_termlogger (log_level);
+  let app = App::parse();
+  let log_level = app.args.log_level.unwrap_or (simplelog::LevelFilter::Debug);
+  app::init_combined_termlogger (log_level, app.args.module_filters);
   log::info!("terminal logger initialized");
   // incremental files example
   log::info!("example: incrementally named files");
-  let temp_dir  = unwrap!(
-    tempfile::Builder::new().prefix ("tmp").tempdir_in ("examples"));
+  let temp_dir  =
+    tempfile::Builder::new().prefix ("tmp").tempdir_in ("examples").unwrap();
   let file_path = temp_dir.path().join (Path::new ("myfile"));
   let path      = file_path.as_path();
   log::debug!("file_path_incremental\n  \"{}\":\n  {}",
-    path.display(), unwrap!(file::file_path_incremental (path)).display());
+    path.display(), file::file_path_incremental (path).unwrap().display());
   log::debug!("file_new_append_incremental \"{}\"...", path.display());
-  unwrap!(file::file_new_append_incremental (path));
+  file::file_new_append_incremental (path).unwrap();
   log::debug!("file_path_incremental\n  \"{}\":\n  {}",
-    path.display(), unwrap!(file::file_path_incremental (path)).display());
+    path.display(), file::file_path_incremental (path).unwrap().display());
   log::debug!("file_new_append_incremental \"{}\"...", path.display());
-  unwrap!(file::file_new_append_incremental (path));
+  file::file_new_append_incremental (path).unwrap();
   log::debug!("file_path_incremental\n  \"{}\":\n  {}",
-    path.display(), unwrap!(file::file_path_incremental (path)).display());
+    path.display(), file::file_path_incremental (path).unwrap().display());
   log::debug!("file_path_incremental and then file_new_append\n  \"{}\"...",
     path.display());
   // file_new_append_incremental is equivalent to:
-  unwrap!(file::file_path_incremental (path)
-    .and_then (|path_buf| file::file_new_append (path_buf.as_path())));
+  file::file_path_incremental (path)
+    .and_then (|path_buf| file::file_new_append (path_buf.as_path())).unwrap();
   log::info!("!ls {}", temp_dir.path().display());
-  assert!(unwrap!(
-    std::process::Command::new ("ls")
-      .arg (temp_dir.path().as_os_str())
-      .status()
-  ).success());
+  assert!(std::process::Command::new ("ls")
+    .arg (temp_dir.path().as_os_str())
+    .status().unwrap().success());
 
   println!("...{:?} main", app::exe_name());
 }

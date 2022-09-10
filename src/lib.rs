@@ -19,3 +19,4 @@ pub mod macros;
 pub use self::macros::*;
 
 #[cfg(feature = "app")] pub mod app;
+#[cfg(feature = "app")] pub use self::app::App;
