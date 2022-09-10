@@ -45,6 +45,25 @@ pub fn init_simple_termlogger (log_level : simplelog::LevelFilter) {
   ).unwrap();
 }
 
+/// Initialize `simplelog` write logger to `Write` object with the given log
+/// level.
+///
+/// This sets the "target level" to `Error` (show module paths for all levels)
+/// and sets the "thread level" to `Off` (don't show thread numbers for any
+/// levels).
+pub fn init_simple_writelogger <W> (
+  writeable : W,
+  log_level : simplelog::LevelFilter
+) where
+  W : std::io::Write + Send + 'static
+{
+  simplelog::WriteLogger::init (
+    log_level,
+    base_simplelog_config_builder().build(),
+    writeable
+  ).unwrap();
+}
+
 /// Initialize a `simplelog` terminal logger to stdout with a given global log
 /// level and list of module filters.
 ///
@@ -78,6 +97,41 @@ pub fn init_combined_termlogger (
       builder.build(),
       simplelog::TerminalMode::Stdout,
       simplelog::ColorChoice::Auto
+    ));
+  }
+  simplelog::CombinedLogger::init (loggers).unwrap();
+}
+
+/// Initialize a `simplelog` write logger with a given global log level and list
+/// of module filters.
+///
+/// This sets the "target level" to `Error` (show module paths for all levels)
+/// and sets the "thread level" to `Off` (don't show thread numbers for any
+/// levels).
+pub fn init_combined_writelogger <W> (
+  writeable         : W,
+  global_log_level  : simplelog::LevelFilter,
+  module_log_levels : Vec <(String, simplelog::LevelFilter)>,
+) where
+  W : std::io::Write + Send + Clone + 'static
+{
+  let global_config = {
+    let mut builder = base_simplelog_config_builder();
+    for (module, _) in module_log_levels.iter().cloned() {
+      builder.add_filter_ignore (module);
+    }
+    builder.build()
+  };
+  let mut loggers : Vec <Box <dyn simplelog::SharedLogger>> = vec![
+    simplelog::WriteLogger::new (
+      global_log_level, global_config, writeable.clone()
+    )
+  ];
+  for (module, level_filter) in module_log_levels {
+    let mut builder = base_simplelog_config_builder();
+    builder.add_filter_allow (module);
+    loggers.push (simplelog::WriteLogger::new (
+      level_filter, builder.clone().build(), writeable.clone()
     ));
   }
   simplelog::CombinedLogger::init (loggers).unwrap();
