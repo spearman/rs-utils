@@ -74,6 +74,7 @@ pub fn init_combined_termlogger (
   global_log_level  : simplelog::LevelFilter,
   module_log_levels : Vec <(String, simplelog::LevelFilter)>
 ) {
+  use std::str::pattern::Pattern;
   let global_config = {
     let mut builder = base_simplelog_config_builder();
     for (module, _) in module_log_levels.iter().cloned() {
@@ -89,11 +90,30 @@ pub fn init_combined_termlogger (
       simplelog::ColorChoice::Auto
     )
   ];
-  for (module, level_filter) in module_log_levels {
+  for (module, level_filter) in module_log_levels.iter().cloned() {
     let mut builder = base_simplelog_config_builder();
-    builder.add_filter_allow (module);
+    builder.add_filter_allow (module.clone());
+    builder.add_filter_ignore (format!("{}::", module));
     loggers.push (simplelog::TermLogger::new (
       level_filter,
+      builder.build(),
+      simplelog::TerminalMode::Stdout,
+      simplelog::ColorChoice::Auto
+    ));
+    // NOTE: because of the way ignore filters work, they will override any
+    // allows so to enable the global log level on child modules we need to
+    // selectively enable logging for child modules and ignore any that have set
+    // their own levels
+    let allow_children_string = format!("{}::", module);
+    let mut builder = base_simplelog_config_builder();
+    builder.add_filter_allow (allow_children_string.clone());
+    for (other_module, _) in module_log_levels.iter().cloned() {
+      if allow_children_string.is_prefix_of (&other_module) {
+        builder.add_filter_ignore (other_module);
+      }
+    }
+    loggers.push (simplelog::TermLogger::new (
+      global_log_level,
       builder.build(),
       simplelog::TerminalMode::Stdout,
       simplelog::ColorChoice::Auto
@@ -115,6 +135,7 @@ pub fn init_combined_writelogger <W> (
 ) where
   W : std::io::Write + Send + Clone + 'static
 {
+  use std::str::pattern::Pattern;
   let global_config = {
     let mut builder = base_simplelog_config_builder();
     for (module, _) in module_log_levels.iter().cloned() {
@@ -124,15 +145,28 @@ pub fn init_combined_writelogger <W> (
   };
   let mut loggers : Vec <Box <dyn simplelog::SharedLogger>> = vec![
     simplelog::WriteLogger::new (
-      global_log_level, global_config, writeable.clone()
-    )
+      global_log_level, global_config, writeable.clone())
   ];
-  for (module, level_filter) in module_log_levels {
+  for (module, level_filter) in module_log_levels.iter().cloned() {
     let mut builder = base_simplelog_config_builder();
-    builder.add_filter_allow (module);
+    builder.add_filter_allow (module.clone());
+    builder.add_filter_ignore (format!("{}::", module));
     loggers.push (simplelog::WriteLogger::new (
-      level_filter, builder.clone().build(), writeable.clone()
-    ));
+      level_filter, builder.build(), writeable.clone()));
+    // NOTE: because of the way ignore filters work, they will override any
+    // allows so to enable the global log level on child modules we need to
+    // selectively enable logging for child modules and ignore any that have set
+    // their own levels
+    let allow_children_string = format!("{}::", module);
+    let mut builder = base_simplelog_config_builder();
+    builder.add_filter_allow (allow_children_string.clone());
+    for (other_module, _) in module_log_levels.iter().cloned() {
+      if allow_children_string.is_prefix_of (&other_module) {
+        builder.add_filter_ignore (other_module);
+      }
+    }
+    loggers.push (simplelog::WriteLogger::new (
+      global_log_level, builder.build(), writeable.clone()));
   }
   simplelog::CombinedLogger::init (loggers).unwrap();
 }
@@ -154,6 +188,7 @@ fn base_simplelog_config_builder() -> simplelog::ConfigBuilder {
   let mut builder = simplelog::ConfigBuilder::new();
   builder.set_target_level (simplelog::LevelFilter::Error); // module path
   builder.set_thread_level (simplelog::LevelFilter::Off);   // no thread numbers
+  builder.set_time_format_rfc3339();
   builder
 }
 

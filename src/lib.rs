@@ -3,6 +3,7 @@
 //! [Repository](https://github.com/spearman/rs-utils)
 
 #![feature(decl_macro)]
+#![cfg_attr(feature = "app", feature(pattern))]
 
 extern crate generic_array;
 extern crate typenum;
