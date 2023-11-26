@@ -1,26 +1,16 @@
 [package]
 name = "rs-utils"
-version = "0.0.20"
+version = "0.0.21"
 authors = ["Shane Pearman <spearman@gitlab.com>"]
 license = "Apache-2.0"
 edition = "2021"
 
-[features]
-app = ["clap", "log", "simplelog"]
-
 [dependencies]
-generic-array = "0.14.*"
-typenum = "1.*"
-# optional
-clap = { version = "4.*", features = ["derive"], optional = true }
-log = { version = "0.4.*", optional = true }
-simplelog = { version = "0.12.*", optional = true }
+log = "0.4.*"
+stdext = "0.3.*"
 
 [dev-dependencies]
+env_logger = "0.10.*"
 quickcheck = "1.*"
 quickcheck_macros = "1.*"
 tempfile = "3.*"
-
-[[example]]
-name = "example"
-required-features = ["app"]
