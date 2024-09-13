@@ -3,6 +3,8 @@
 #[doc(hidden)] extern crate log;
 #[doc(hidden)] extern crate stdext;
 
+pub use log::LevelFilter;
+
 #[cfg(feature="env-logger-format")]
 pub use self::kv::{env_logger_custom_format, env_logger_json_format};
 
@@ -45,6 +47,7 @@ pub mod kv {
   //! The usual key-value format for log macros is to put the keys before the
   //! message, the macros in this module reverses this order so that the log
   //! message comes before the key/value pairs.
+  pub use log::LevelFilter;
 
   pub macro trace {
     ($fmtstring:expr$(, $fmtarg:expr)*$(; $($kvargs:tt)*)?) => {
