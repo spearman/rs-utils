@@ -1,4 +1,4 @@
-# `rs-utils`
+# `nsys-rs-utils`
 
 > Miscellaneous Rust utilities
 
