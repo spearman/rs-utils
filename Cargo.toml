@@ -1,6 +1,6 @@
 [package]
 name = "nsys-rs-utils"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["Shane Pearman <spearman@gitlab.com>"]
 description = "Miscellaneous Rust utilities"
 repository = "https://github.com/spearman/rs-utils"
