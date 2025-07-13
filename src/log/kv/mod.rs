@@ -3,8 +3,10 @@
 //! message comes before the key/value pairs.
 
 #[cfg(feature="env-logger-format")]
+#[cfg_attr(docsrs, doc(cfg(feature="env-logger-format")))]
 pub mod format;
 #[cfg(feature="env-logger-format")]
+#[cfg_attr(docsrs, doc(cfg(feature="env-logger-format")))]
 pub use self::format::*;
 
 pub use log::LevelFilter;

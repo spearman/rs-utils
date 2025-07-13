@@ -1,12 +1,16 @@
 [package]
 name = "nsys-rs-utils"
-version = "0.2.2"
+version = "0.2.3"
 authors = ["Shane Pearman <spearman@gitlab.com>"]
 description = "Miscellaneous Rust utilities"
 repository = "https://github.com/spearman/rs-utils"
 license = "Apache-2.0"
 readme = "README.md"
 edition = "2024"
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
 
 [lib]
 name = "rs_utils"

@@ -3,6 +3,7 @@
 //! [Repository](https://github.com/spearman/rs-utils)
 
 #![feature(decl_macro)]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 
 pub mod file;
 pub mod log;
