@@ -1,9 +1,15 @@
 [package]
-name = "rs-utils"
-version = "0.2.0"
+name = "nsys-rs-utils"
+version = "0.2.1"
 authors = ["Shane Pearman <spearman@gitlab.com>"]
+description = "Miscellaneous Rust utilities"
+repository = "https://github.com/spearman/rs-utils"
 license = "Apache-2.0"
-edition = "2021"
+readme = "README.md"
+edition = "2024"
+
+[lib]
+name = "rs_utils"
 
 [features]
 default = []
