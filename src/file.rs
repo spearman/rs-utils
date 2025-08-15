@@ -7,7 +7,7 @@ use std;
 //
 /// Calls `file_new_append` on the path returned by feeding the file path to
 /// `file_path_incremental`.
-
+///
 /// # Errors
 ///
 /// - Invalid unicode (&#x261e; see [`is_file`](fn.is_file.html))
@@ -27,7 +27,7 @@ pub fn file_new_append_incremental (file_path : &std::path::Path)
 //
 /// Opens a new file at specified path for writing in append mode, recursively
 /// creating parent directories
-
+///
 /// # Errors
 ///
 /// - Invalid unicode (&#x261e; see [`is_file`](fn.is_file.html))
@@ -125,7 +125,7 @@ pub fn file_path_incremental (file_path : &std::path::Path)
       returned invalid os str: {:?}", file_path.file_name()));
   let dir = file_path.parent().unwrap_or_else (|| std::path::Path::new (""));
   for i in 0.. {
-    let name = String::from (file_name) + &format!("-{}", i);
+    let name = String::from (file_name) + &format!("-{i}");
     let fp   = dir.join (name);
     if !fp.exists() {
       return Ok (fp)
@@ -160,7 +160,7 @@ pub fn file_path_incremental_with_extension (file_path : &std::path::Path)
       returned invalid os str: {:?}", file_path.file_name()));
   let dir = file_path.parent().unwrap_or_else (|| std::path::Path::new (""));
   for i in 0.. {
-    let name = &format!("{}-{}.{}", file_stem, i, extension);
+    let name = &format!("{file_stem}-{i}.{extension}");
     let fp   = dir.join (name);
     if !fp.exists() {
       return Ok (fp)
@@ -211,7 +211,7 @@ pub fn is_file (file_path : &std::path::Path) -> Result <bool, std::io::Error> {
     return Ok (false)
   }
 
-  if let None = std::path::Path::new (file_path).file_name() {
+  if std::path::Path::new (file_path).file_name().is_none() {
     return Ok (false)
   }
 

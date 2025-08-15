@@ -29,7 +29,7 @@ pub fn env_logger_json_formatter (config : EnvLoggerFormatConfig) -> impl
   move |buf : &mut env_logger::fmt::Formatter, record : &log::Record|{
     let thread_string = if config.thread {
       std::thread::current().name()
-        .map (|name| format!(",\"thread\":\"{}\"", name))
+        .map (|name| format!(",\"thread\":\"{name}\""))
         .unwrap_or_else (||
           format!(",\"thread\":\"{:?}\"",
             std::thread::current().id()).replace ("ThreadId", "unnamed"))
@@ -76,14 +76,14 @@ pub fn env_logger_custom_formatter (config : EnvLoggerFormatConfig) -> impl
       if !value_str.contains (char::is_whitespace) {
         // if there is no whitespace we can remove outer quotes and un-escape
         // any internal quotes
-        value_string = value_str.replace("\\\"", "\"");
-        value_str = if value_string.chars().next() == Some('"') {
+        value_string = value_str.replace ("\\\"", "\"");
+        value_str = if value_string.starts_with ('"') {
           &value_string[1..value_string.len()-1]
         } else {
           &value_string[..]
         };
       }
-      self.0 += format!(" {}={}", key, value_str).as_str();
+      self.0 += format!(" {key}={value_str}").as_str();
       Ok(())
     }
   }
@@ -101,7 +101,7 @@ pub fn env_logger_custom_formatter (config : EnvLoggerFormatConfig) -> impl
         "{} {:6} {}{}", buf.timestamp(), level_string, record.args(), kvs)
     } else {
       let thread_string = if config.thread {
-        std::thread::current().name().map (|name| format!(" {}", name))
+        std::thread::current().name().map (|name| format!(" {name}"))
           .unwrap_or_else (||
             format!(" {:?}",
               std::thread::current().id()).replace ("ThreadId", "unnamed"))
