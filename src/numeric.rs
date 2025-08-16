@@ -2,32 +2,26 @@
 
 use std;
 
-/// Returns the minimum of two partially ordered values, returning the rhs when
-/// they are incomparable.
+/// Returns the minimum of two partially ordered values, returning the rhs when they are
+/// incomparable.
 ///
 /// This follows the convention of `f32::min` and `f32::max`, but the opposite
 /// convention is used internally by the `collision` crate.
-pub fn min_partial <S> (lhs : S, rhs : S) -> S where
-  S : Copy + PartialOrd
-{
+pub fn min_partial <S> (lhs : S, rhs : S) -> S where S : Copy + PartialOrd {
   match lhs.partial_cmp (&rhs) {
-    Some (std::cmp::Ordering::Less) | Some (std::cmp::Ordering::Equal)
-      => lhs,
+    Some (std::cmp::Ordering::Less) | Some (std::cmp::Ordering::Equal) => lhs,
     _ => rhs
   }
 }
 
-/// Returns the maximum of two partially ordered values, returning the rhs when
-/// they are incomparable.
+/// Returns the maximum of two partially ordered values, returning the rhs when they are
+/// incomparable.
 ///
 /// This follows the convention of `f32::min` and `f32::max`, but the opposite
 /// convention is used internally by the `collision` crate.
-pub fn max_partial <S> (lhs : S, rhs : S) -> S where
-  S : Copy + PartialOrd
-{
+pub fn max_partial <S> (lhs : S, rhs : S) -> S where S : Copy + PartialOrd {
   match lhs.partial_cmp (&rhs) {
-    Some (std::cmp::Ordering::Greater) | Some (std::cmp::Ordering::Equal)
-      => lhs,
+    Some (std::cmp::Ordering::Greater) | Some (std::cmp::Ordering::Equal) => lhs,
     _ => rhs
   }
 }

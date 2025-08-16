@@ -6,8 +6,7 @@
 /// This is to avoid dynamic dispatch when chaining iterators over generic
 /// collections when the types are known.
 pub macro for_sequence {
-  ( $pattern:pat in ($($iter:expr),+) $do:block
-  ) => {
+  ( $pattern:pat in ($($iter:expr),+) $do:block) => {
     $(for $pattern in $iter $do)+
   }
 }
