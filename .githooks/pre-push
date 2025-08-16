@@ -10,5 +10,6 @@ fi
 export RUSTFLAGS="-D warnings"
 cargo clippy --all-features
 cargo test --all-features
+yamllint --no-warnings .github/workflows/ci.yml
 
 exit 0
