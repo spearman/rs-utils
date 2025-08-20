@@ -22,7 +22,7 @@ env-logger-format = ["env_logger", "serde_json", "log/kv_serde"]
 [dependencies]
 log = { version = "0.4.*", features = ["kv"] }
 stdext = "0.3.*"
-env_logger = { version = "0.11.*", features = ["unstable-kv"], optional = true }
+env_logger = { version = "0.11.*", features = ["kv"], optional = true }
 serde_json = { version = "1.*", optional = true }
 
 [dev-dependencies]
