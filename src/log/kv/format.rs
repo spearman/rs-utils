@@ -1,4 +1,4 @@
-//! Custom env_logger formats
+//! Custom `env_logger` formats
 
 use std;
 use env_logger;
@@ -28,10 +28,10 @@ pub fn env_logger_json_formatter (config : EnvLoggerFormatConfig)
   }
   move |buf : &mut env_logger::fmt::Formatter, record : &log::Record|{
     let thread_string = if config.thread {
-      std::thread::current().name()
-        .map (|name| format!(",\"thread\":\"{name}\""))
-        .unwrap_or_else (|| format!(",\"thread\":\"{:?}\"",
-          std::thread::current().id()).replace ("ThreadId", "unnamed"))
+      std::thread::current().name().map_or_else (
+        || format!(",\"thread\":\"{:?}\"", std::thread::current().id())
+          .replace ("ThreadId", "unnamed"),
+        |name| format!(",\"thread\":\"{name}\""))
     } else {
       "".to_string()
     };
@@ -97,9 +97,10 @@ pub fn env_logger_custom_formatter (config : EnvLoggerFormatConfig)
       writeln!(buf, "{} {:6} {}{}", buf.timestamp(), level_string, record.args(), kvs)
     } else {
       let thread_string = if config.thread {
-        std::thread::current().name().map (|name| format!(" {name}"))
-          .unwrap_or_else (|| format!(" {:?}",
-            std::thread::current().id()).replace ("ThreadId", "unnamed"))
+        std::thread::current().name().map_or_else (
+          || format!(" {:?}", std::thread::current().id())
+            .replace ("ThreadId", "unnamed"),
+          |name| format!(" {name}"))
       } else {
         "".to_string()
       };

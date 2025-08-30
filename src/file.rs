@@ -1,4 +1,5 @@
 //! File utilities
+#![expect(clippy::module_name_repetitions)]
 
 use std;
 
@@ -246,8 +247,8 @@ mod tests {
     let temp_dir  = tempfile::Builder::new().prefix ("tmp").tempdir().unwrap();
     let file_path = temp_dir.path().join (file_path);
     quickcheck::TestResult::from_bool (
-      if let Err(e) = std::fs::OpenOptions::new()
-        .append (true).create (true).open (file_path.clone())
+      if let Err(e) = std::fs::OpenOptions::new().append (true).create (true)
+        .open (file_path)
       {
         e.kind() != std::io::ErrorKind::Other
       } else {
