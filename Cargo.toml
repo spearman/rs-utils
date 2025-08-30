@@ -36,3 +36,4 @@ required-features = ["env-logger-format"]
 
 [lints.clippy]
 empty_line_after_doc_comments = "allow"
+single-component-path-imports = "allow"

@@ -240,10 +240,8 @@ mod tests {
     if !is_file (file_path).unwrap() {
       return quickcheck::TestResult::discard()
     }
-    if let Some (s) = file_path.parent() {
-      if !s.to_str().unwrap().is_empty() {
-        return quickcheck::TestResult::discard()
-      }
+    if let Some (s) = file_path.parent() && !s.to_str().unwrap().is_empty() {
+      return quickcheck::TestResult::discard()
     }
     let temp_dir  = tempfile::Builder::new().prefix ("tmp").tempdir().unwrap();
     let file_path = temp_dir.path().join (file_path);
