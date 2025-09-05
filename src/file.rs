@@ -57,7 +57,7 @@ pub fn file_new_append_incremental (file_path : &std::path::Path)
 /// file_new_append (file_path).unwrap();
 /// let e = file_new_append (file_path).err().unwrap();
 /// assert_eq!(e.kind(), ErrorKind::AlreadyExists);
-/// assert_eq!(e.description(), "entity already exists");
+/// assert_eq!(e.to_string(), "File exists (os error 17)");
 /// # }
 /// ```
 
@@ -106,7 +106,7 @@ pub fn file_new_append (file_path : &std::path::Path)
 /// # use rs_utils::file::file_path_incremental;
 /// let e = file_path_incremental (Path::new ("somepath/")).err().unwrap();
 /// assert_eq!(e.kind(), ErrorKind::InvalidInput);
-/// assert_eq!(e.description(), "not a file");
+/// assert_eq!(e.to_string(), "not a file");
 /// ```
 
 pub fn file_path_incremental (file_path : &std::path::Path)
@@ -200,7 +200,7 @@ pub fn file_path_incremental_with_extension (file_path : &std::path::Path)
 /// let garbage_path = Path::new (OsStr::from_bytes (&garbage));
 /// let e = is_file (&garbage_path).err().unwrap();
 /// assert_eq!(e.kind(), ErrorKind::InvalidInput);
-/// assert_eq!(e.description(), "not valid unicode");
+/// assert_eq!(e.to_string(), "not valid unicode");
 /// ```
 
 pub fn is_file (file_path : &std::path::Path) -> Result <bool, std::io::Error> {
