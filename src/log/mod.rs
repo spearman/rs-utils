@@ -1,8 +1,5 @@
 //! Logging macros
 
-#[doc(hidden)] extern crate log;
-#[doc(hidden)] extern crate stdext;
-
 pub mod kv;
 
 pub use log::LevelFilter;
