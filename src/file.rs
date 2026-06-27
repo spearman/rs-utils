@@ -38,8 +38,7 @@ pub fn file_new_append_incremental (file_path : &path::Path)
 /// - File already exists:
 ///
 /// ```
-/// extern crate tempfile;
-/// # extern crate rs_utils;
+/// use tempfile;
 /// # use std::error::Error; use std::io::ErrorKind; use std::path::Path;
 /// # use rs_utils::file::file_new_append;
 /// # fn main () {
@@ -173,7 +172,7 @@ pub fn file_path_incremental_with_extension (file_path : &path::Path)
 /// use std::os::unix::ffi::OsStrExt;
 /// let garbage = [192u8, 192u8, 192u8, 192u8];
 /// let garbage_path = Path::new (OsStr::from_bytes (&garbage));
-/// let e = is_file (&garbage_path).err().unwrap();
+/// let e = is_file (garbage_path).err().unwrap();
 /// assert_eq!(e.kind(), ErrorKind::InvalidInput);
 /// assert_eq!(e.to_string(), "not valid unicode");
 /// ```
