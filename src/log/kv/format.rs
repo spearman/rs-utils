@@ -1,6 +1,6 @@
 //! Custom `env_logger` formats
 
-use std;
+use std::{io, thread};
 use env_logger;
 use log;
 
@@ -12,9 +12,9 @@ pub struct EnvLoggerFormatConfig {
 
 /// Formats log messages as a json object string
 pub fn env_logger_json_formatter (config : EnvLoggerFormatConfig)
-  -> impl Fn(&mut env_logger::fmt::Formatter, &log::Record<'_>) -> std::io::Result<()>
+  -> impl Fn(&mut env_logger::fmt::Formatter, &log::Record<'_>) -> io::Result<()>
 {
-  use std::io::Write;
+  use io::Write;
   #[derive(Default)]
   struct KVVisitor(pub String);
   impl <'kvs> log::kv::VisitSource <'kvs> for KVVisitor {
@@ -28,8 +28,8 @@ pub fn env_logger_json_formatter (config : EnvLoggerFormatConfig)
   }
   move |buf : &mut env_logger::fmt::Formatter, record : &log::Record|{
     let thread_string = if config.thread {
-      std::thread::current().name().map_or_else (
-        || format!(",\"thread\":\"{:?}\"", std::thread::current().id())
+      thread::current().name().map_or_else (
+        || format!(",\"thread\":\"{:?}\"", thread::current().id())
           .replace ("ThreadId", "unnamed"),
         |name| format!(",\"thread\":\"{name}\""))
     } else {
@@ -60,9 +60,9 @@ pub fn env_logger_json_formatter (config : EnvLoggerFormatConfig)
 /// <ts> <level> <thread> <target> <file>: <msg> [ <key>=<value>]
 /// ```
 pub fn env_logger_custom_formatter (config : EnvLoggerFormatConfig)
-  -> impl Fn(&mut env_logger::fmt::Formatter, &log::Record<'_>) -> std::io::Result<()>
+  -> impl Fn(&mut env_logger::fmt::Formatter, &log::Record<'_>) -> io::Result<()>
 {
-  use std::io::Write;
+  use io::Write;
   #[derive(Default)]
   struct KVVisitor(pub String);
   impl <'kvs> log::kv::VisitSource <'kvs> for KVVisitor {
@@ -98,8 +98,8 @@ pub fn env_logger_custom_formatter (config : EnvLoggerFormatConfig)
       writeln!(buf, "{} {:6} {}{}", buf.timestamp(), level_string, record.args(), kvs)
     } else {
       let thread_string = if config.thread {
-        std::thread::current().name().map_or_else (
-          || format!(" {:?}", std::thread::current().id())
+        thread::current().name().map_or_else (
+          || format!(" {:?}", thread::current().id())
             .replace ("ThreadId", "unnamed"),
           |name| format!(" {name}"))
       } else {

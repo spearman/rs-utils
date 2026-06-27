@@ -1,7 +1,7 @@
 //! File utilities
 #![expect(clippy::module_name_repetitions)]
 
-use std;
+use std::{fs, io, path};
 
 //
 //  file_new_append_incremental
@@ -14,8 +14,8 @@ use std;
 /// - Invalid unicode (&#x261e; see [`is_file`](fn.is_file.html))
 /// - Not a file (&#x261e; see [`file_path_incremental`](fn.file_path_incremental.html))
 
-pub fn file_new_append_incremental (file_path : &std::path::Path)
-  -> Result <(std::path::PathBuf, std::fs::File), std::io::Error>
+pub fn file_new_append_incremental (file_path : &path::Path)
+  -> Result <(path::PathBuf, fs::File), io::Error>
 {
   let file_pathbuf = file_path_incremental (file_path)?;
   let file         = file_new_append (file_pathbuf.as_path())?;
@@ -61,18 +61,16 @@ pub fn file_new_append_incremental (file_path : &std::path::Path)
 /// # }
 /// ```
 
-pub fn file_new_append (file_path : &std::path::Path)
-  -> Result <std::fs::File, std::io::Error>
-{
+pub fn file_new_append (file_path : &path::Path) -> Result <fs::File, io::Error> {
   if !is_file (file_path)? {
-    return Err (std::io::Error::new (std::io::ErrorKind::InvalidInput,
+    return Err (io::Error::new (io::ErrorKind::InvalidInput,
       "not a file".to_string()))
   }
 
-  let dir = file_path.parent().unwrap_or_else (|| std::path::Path::new (""));
-  std::fs::create_dir_all (dir)?;
+  let dir = file_path.parent().unwrap_or_else (|| path::Path::new (""));
+  fs::create_dir_all (dir)?;
 
-  std::fs::OpenOptions::new().append (true).create_new (true).open (file_path)
+  fs::OpenOptions::new().append (true).create_new (true).open (file_path)
 } // end file_new_append
 
 //
@@ -109,12 +107,11 @@ pub fn file_new_append (file_path : &std::path::Path)
 /// assert_eq!(e.to_string(), "not a file");
 /// ```
 
-pub fn file_path_incremental (file_path : &std::path::Path)
-  -> Result <std::path::PathBuf, std::io::Error>
+pub fn file_path_incremental (file_path : &path::Path)
+  -> Result <path::PathBuf, io::Error>
 {
   if !is_file (file_path)? {
-    return Err (std::io::Error::new (
-      std::io::ErrorKind::InvalidInput, "not a file".to_string()))
+    return Err (io::Error::new (io::ErrorKind::InvalidInput, "not a file".to_string()))
   }
 
   // unwrap failure should have been caught by `is_file` test
@@ -123,7 +120,7 @@ pub fn file_path_incremental (file_path : &std::path::Path)
   ).to_str().unwrap_or_else (
     || panic!("fatal: `file_path.file_name()` returned invalid os str: {:?}",
       file_path.file_name()));
-  let dir = file_path.parent().unwrap_or_else (|| std::path::Path::new (""));
+  let dir = file_path.parent().unwrap_or_else (|| path::Path::new (""));
   for i in 0.. {
     let name = String::from (file_name) + &format!("-{i}");
     let fp   = dir.join (name);
@@ -139,12 +136,11 @@ pub fn file_path_incremental (file_path : &std::path::Path)
 //
 /// Like file path incremental but preserves the file extension if one is present.
 
-pub fn file_path_incremental_with_extension (file_path : &std::path::Path)
-  -> Result <std::path::PathBuf, std::io::Error>
+pub fn file_path_incremental_with_extension (file_path : &path::Path)
+  -> Result <path::PathBuf, io::Error>
 {
   if !is_file (file_path)? {
-    return Err (std::io::Error::new (
-      std::io::ErrorKind::InvalidInput, "not a file".to_string()))
+    return Err (io::Error::new (io::ErrorKind::InvalidInput, "not a file".to_string()))
   }
 
   if file_path.extension().is_none() {
@@ -158,7 +154,7 @@ pub fn file_path_incremental_with_extension (file_path : &std::path::Path)
     .unwrap_or_else (|| panic!(
       "fatal: `file_path.file_name()` returned invalid os str: {:?}",
       file_path.file_name()));
-  let dir = file_path.parent().unwrap_or_else (|| std::path::Path::new (""));
+  let dir = file_path.parent().unwrap_or_else (|| path::Path::new (""));
   for i in 0.. {
     let name = &format!("{file_stem}-{i}.{extension}");
     let fp   = dir.join (name);
@@ -203,15 +199,15 @@ pub fn file_path_incremental_with_extension (file_path : &std::path::Path)
 /// assert_eq!(e.to_string(), "not valid unicode");
 /// ```
 
-pub fn is_file (file_path : &std::path::Path) -> Result <bool, std::io::Error> {
-  let s = file_path.to_str().ok_or (std::io::Error::new (
-    std::io::ErrorKind::InvalidInput, "not valid unicode".to_string()))?;
+pub fn is_file (file_path : &path::Path) -> Result <bool, io::Error> {
+  let s = file_path.to_str().ok_or (io::Error::new (
+    io::ErrorKind::InvalidInput, "not valid unicode".to_string()))?;
 
-  if s.ends_with (std::path::MAIN_SEPARATOR) {
+  if s.ends_with (path::MAIN_SEPARATOR) {
     return Ok (false)
   }
 
-  if std::path::Path::new (file_path).file_name().is_none() {
+  if path::Path::new (file_path).file_name().is_none() {
     return Ok (false)
   }
 
@@ -223,7 +219,6 @@ pub fn is_file (file_path : &std::path::Path) -> Result <bool, std::io::Error> {
 //
 #[cfg(test)]
 mod tests {
-  use std;
   use tempfile;
   use quickcheck;
   use super::*;
@@ -237,7 +232,7 @@ mod tests {
   #[ignore] // to run test use `cargo test -- --ignored`
   #[quickcheck_macros::quickcheck]
   fn prop_is_file_implies_not_directory (file_path : String) -> quickcheck::TestResult {
-    let file_path = std::path::Path::new (file_path.as_str());
+    let file_path = path::Path::new (file_path.as_str());
     if !is_file (file_path).unwrap() {
       return quickcheck::TestResult::discard()
     }
@@ -247,10 +242,10 @@ mod tests {
     let temp_dir  = tempfile::Builder::new().prefix ("tmp").tempdir().unwrap();
     let file_path = temp_dir.path().join (file_path);
     quickcheck::TestResult::from_bool (
-      if let Err(e) = std::fs::OpenOptions::new().append (true).create (true)
+      if let Err(e) = fs::OpenOptions::new().append (true).create (true)
         .open (file_path)
       {
-        e.kind() != std::io::ErrorKind::Other
+        e.kind() != io::ErrorKind::Other
       } else {
         true
       }

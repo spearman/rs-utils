@@ -1,6 +1,6 @@
 //! Numeric utilities
 
-use std;
+use std::cmp;
 
 /// Returns the minimum of two partially ordered values, returning the rhs when they are
 /// incomparable.
@@ -9,7 +9,7 @@ use std;
 /// convention is used internally by the `collision` crate.
 pub fn min_partial <S> (lhs : S, rhs : S) -> S where S : Copy + PartialOrd {
   match lhs.partial_cmp (&rhs) {
-    Some (std::cmp::Ordering::Less) | Some (std::cmp::Ordering::Equal) => lhs,
+    Some (cmp::Ordering::Less) | Some (cmp::Ordering::Equal) => lhs,
     _ => rhs
   }
 }
@@ -21,7 +21,7 @@ pub fn min_partial <S> (lhs : S, rhs : S) -> S where S : Copy + PartialOrd {
 /// convention is used internally by the `collision` crate.
 pub fn max_partial <S> (lhs : S, rhs : S) -> S where S : Copy + PartialOrd {
   match lhs.partial_cmp (&rhs) {
-    Some (std::cmp::Ordering::Greater) | Some (std::cmp::Ordering::Equal) => lhs,
+    Some (cmp::Ordering::Greater) | Some (cmp::Ordering::Equal) => lhs,
     _ => rhs
   }
 }
