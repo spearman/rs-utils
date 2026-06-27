@@ -5,6 +5,8 @@
 #![feature(decl_macro)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
+#[expect(unused_extern_crates)]
+extern crate log as log_;
 #[expect(unused_imports)]
 use stdext;
 
