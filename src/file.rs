@@ -105,11 +105,10 @@ pub fn file_path_incremental (file_path : &path::Path)
     return Err (io::Error::new (io::ErrorKind::InvalidInput, "not a file".to_string()))
   }
   // unwrap failure should have been caught by `is_file` test
-  let file_name = file_path.file_name().unwrap_or_else (
-    || panic!("fatal: path should be a valid file")
-  ).to_str().unwrap_or_else (
-    || panic!("fatal: `file_path.file_name()` returned invalid os str: {:?}",
-      file_path.file_name()));
+  let file_name = file_path.file_name().expect ("fatal: path should be a valid file")
+    .to_str().unwrap_or_else (||
+      panic!("fatal: `file_path.file_name()` returned invalid os str: {:?}",
+        file_path.file_name()));
   let dir = file_path.parent().unwrap_or_else (|| path::Path::new (""));
   for i in 0.. {
     let name = String::from (file_name) + &format!("-{i}");
@@ -134,10 +133,10 @@ pub fn file_path_incremental_with_extension (file_path : &path::Path)
   let extension = file_path.extension().unwrap().to_str().unwrap();
   // unwrap failure should have been caught by `is_file` test
   let file_stem = file_path.file_stem()
-    .unwrap_or_else (|| panic!("fatal: path should be a valid file")).to_str()
-    .unwrap_or_else (|| panic!(
-      "fatal: `file_path.file_name()` returned invalid os str: {:?}",
-      file_path.file_name()));
+    .expect ("fatal: path should be a valid file").to_str()
+    .unwrap_or_else (||
+      panic!("fatal: `file_path.file_name()` returned invalid os str: {:?}",
+        file_path.file_name()));
   let dir = file_path.parent().unwrap_or_else (|| path::Path::new (""));
   for i in 0.. {
     let name = &format!("{file_stem}-{i}.{extension}");
