@@ -32,7 +32,7 @@ pub fn file_new_append_incremental (file_path : &path::Path)
 /// # use rs_utils::file::file_new_append;
 /// let e = file_new_append (Path::new ("somepath/")).err().unwrap();
 /// assert_eq!(e.kind(), ErrorKind::InvalidInput);
-/// assert_eq!(&e.to_string(), "not a file");
+/// assert_eq!(e.to_string(), "not a file");
 /// ```
 ///
 /// - File already exists:
@@ -57,8 +57,7 @@ pub fn file_new_append_incremental (file_path : &path::Path)
 
 pub fn file_new_append (file_path : &path::Path) -> Result <fs::File, io::Error> {
   if !is_file (file_path)? {
-    return Err (io::Error::new (io::ErrorKind::InvalidInput,
-      "not a file".to_string()))
+    return Err (io::Error::new (io::ErrorKind::InvalidInput, "not a file"))
   }
 
   let dir = file_path.parent().unwrap_or_else (|| path::Path::new (""));
@@ -102,7 +101,7 @@ pub fn file_path_incremental (file_path : &path::Path)
   -> Result <path::PathBuf, io::Error>
 {
   if !is_file (file_path)? {
-    return Err (io::Error::new (io::ErrorKind::InvalidInput, "not a file".to_string()))
+    return Err (io::Error::new (io::ErrorKind::InvalidInput, "not a file"))
   }
   // unwrap failure should have been caught by `is_file` test
   let file_name = file_path.file_name().expect ("fatal: path should be a valid file")
@@ -125,7 +124,7 @@ pub fn file_path_incremental_with_extension (file_path : &path::Path)
   -> Result <path::PathBuf, io::Error>
 {
   if !is_file (file_path)? {
-    return Err (io::Error::new (io::ErrorKind::InvalidInput, "not a file".to_string()))
+    return Err (io::Error::new (io::ErrorKind::InvalidInput, "not a file"))
   }
   if file_path.extension().is_none() {
     return file_path_incremental (file_path)
@@ -181,7 +180,7 @@ pub fn file_path_incremental_with_extension (file_path : &path::Path)
 
 pub fn is_file (file_path : &path::Path) -> Result <bool, io::Error> {
   let s = file_path.to_str().ok_or (io::Error::new (
-    io::ErrorKind::InvalidInput, "not valid unicode".to_string()))?;
+    io::ErrorKind::InvalidInput, "not valid unicode"))?;
   if s.ends_with (path::MAIN_SEPARATOR) {
     return Ok (false)
   }
