@@ -21,7 +21,7 @@ pub fn env_logger_json_formatter (config : EnvLoggerFormatConfig)
     fn visit_pair (&mut self, key : log::kv::Key <'kvs>, value : log::kv::Value <'kvs>)
       -> Result <(), log::kv::Error>
     {
-      self.0 += format!(",\"{}\":{}", key, serde_json::to_string(&value).unwrap())
+      self.0 += format!(",\"{}\":{}", key, serde_json::to_string (&value).unwrap())
         .as_str();
       Ok(())
     }
@@ -41,7 +41,8 @@ pub fn env_logger_json_formatter (config : EnvLoggerFormatConfig)
       "".to_string()
     };
     let file_string = if config.file {
-      format!(",\"file\":\"{}:{}\"", record.file().unwrap(), record.line().unwrap())
+      format!(",\"file\":\"{}:{}\"",
+        record.file().unwrap_or ("<unknown>"), record.line().unwrap_or (0))
     } else {
       "".to_string()
     };
@@ -110,7 +111,8 @@ pub fn env_logger_custom_formatter (config : EnvLoggerFormatConfig)
         "".to_string()
       };
       let file_string = if config.file {
-        format!(" {}:{}", record.file().unwrap(), record.line().unwrap())
+        format!(" {}:{}",
+          record.file().unwrap_or ("<unknown>"), record.line().unwrap_or (0))
       } else {
         "".to_string()
       };
