@@ -36,7 +36,7 @@ pub macro display {
 pub macro bits {
   ($e:expr) => {
     let e = $e;
-    println!("{}: {:02$b}", stringify!($e), e, 8 * std::mem::size_of_val (&e));
+    println!("{}: {:02$b}", stringify!($e), e, 8 * core::mem::size_of_val (&e));
   }
 }
 
