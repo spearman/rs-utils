@@ -14,5 +14,5 @@ pub mod file;
 pub mod log;
 pub mod numeric;
 
-pub mod macros;
+mod macros;
 pub use self::macros::*;
