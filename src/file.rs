@@ -3,9 +3,6 @@
 
 use std::{fs, io, path};
 
-//
-//  file_new_append_incremental
-//
 /// Calls `file_new_append` on the path returned by feeding the file path to
 /// `file_path_incremental`.
 ///
@@ -22,9 +19,6 @@ pub fn file_new_append_incremental (file_path : &path::Path)
   Ok ((file_pathbuf, file))
 }
 
-//
-//  file_new_append
-//
 /// Opens a new file at specified path for writing in append mode, recursively creating
 /// parent directories.
 ///
@@ -71,17 +65,14 @@ pub fn file_new_append (file_path : &path::Path) -> Result <fs::File, io::Error>
   fs::create_dir_all (dir)?;
 
   fs::OpenOptions::new().append (true).create_new (true).open (file_path)
-} // end file_new_append
+}
 
-//
-//  file_path_incremental
-//
 /// Returns the file path appended with suffix `-N` where `N` gives the first available
 /// non-pre-existing filename starting from `0`.
 ///
 /// This function only queries for the next available filename, no directories or files
 /// are created.
-
+///
 /// # Examples
 ///
 /// ```
@@ -93,7 +84,7 @@ pub fn file_new_append (file_path : &path::Path) -> Result <fs::File, io::Error>
 ///   "somedir/somefile-0"
 /// );
 /// ```
-
+///
 /// # Errors
 ///
 /// - Invalid unicode (&#x261e; see [`is_file`](fn.is_file.html))
@@ -113,7 +104,6 @@ pub fn file_path_incremental (file_path : &path::Path)
   if !is_file (file_path)? {
     return Err (io::Error::new (io::ErrorKind::InvalidInput, "not a file".to_string()))
   }
-
   // unwrap failure should have been caught by `is_file` test
   let file_name = file_path.file_name().unwrap_or_else (
     || panic!("fatal: path should be a valid file")
@@ -129,25 +119,19 @@ pub fn file_path_incremental (file_path : &path::Path)
     }
   }
   unreachable!("fatal: incremental file name loop should have returned")
-} // end file_path_incremental
+}
 
-//
-//  file_path_incremental_with_extension
-//
 /// Like file path incremental but preserves the file extension if one is present.
-
 pub fn file_path_incremental_with_extension (file_path : &path::Path)
   -> Result <path::PathBuf, io::Error>
 {
   if !is_file (file_path)? {
     return Err (io::Error::new (io::ErrorKind::InvalidInput, "not a file".to_string()))
   }
-
   if file_path.extension().is_none() {
     return file_path_incremental (file_path)
   }
   let extension = file_path.extension().unwrap().to_str().unwrap();
-
   // unwrap failure should have been caught by `is_file` test
   let file_stem = file_path.file_stem()
     .unwrap_or_else (|| panic!("fatal: path should be a valid file")).to_str()
@@ -163,11 +147,8 @@ pub fn file_path_incremental_with_extension (file_path : &path::Path)
     }
   }
   unreachable!("fatal: incremental file name loop should have returned")
-} // end file_path_incremental_with_extension
+}
 
-//
-//  is_file
-//
 /// If this returns true then `std::fs::File::create` will not fail with "is a
 /// directory" error.
 ///
@@ -202,30 +183,21 @@ pub fn file_path_incremental_with_extension (file_path : &path::Path)
 pub fn is_file (file_path : &path::Path) -> Result <bool, io::Error> {
   let s = file_path.to_str().ok_or (io::Error::new (
     io::ErrorKind::InvalidInput, "not valid unicode".to_string()))?;
-
   if s.ends_with (path::MAIN_SEPARATOR) {
     return Ok (false)
   }
-
   if path::Path::new (file_path).file_name().is_none() {
     return Ok (false)
   }
-
   Ok (true)
-} //  end is_file
+}
 
-//
-//  tests
-//
 #[cfg(test)]
 mod tests {
   use tempfile;
   use quickcheck;
   use super::*;
 
-  //
-  //  prop_is_file_implies_not_directory
-  //
   // test that is_file() implies file creation will not give an "is a directory" error:
   // as of Rust 1.16 (2017-01-23) this error is simply indicated by an ErrorKind::Other
   // (other os error)
@@ -251,5 +223,4 @@ mod tests {
       }
     )
   }
-
-} // end mod tests
+}
