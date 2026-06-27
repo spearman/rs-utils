@@ -4,6 +4,7 @@ use std::{io, thread};
 use env_logger;
 use log;
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct EnvLoggerFormatConfig {
   pub thread : bool,
   pub target : bool,
