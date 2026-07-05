@@ -9,7 +9,7 @@ pub mod format;
 #[cfg_attr(docsrs, doc(cfg(feature="env-logger-format")))]
 pub use self::format::*;
 
-pub use log::LevelFilter;
+pub use log::{log, Level, LevelFilter};
 
 /// Log trace message with key values after the message instead of before
 pub macro trace {

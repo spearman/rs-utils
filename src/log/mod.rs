@@ -2,7 +2,7 @@
 
 pub mod kv;
 
-pub use log::LevelFilter;
+pub use log::{log, Level, LevelFilter};
 
 /// Log trace message that includes the enclosing function name in the target
 pub macro trace {
