@@ -1,16 +1,5 @@
 //! Utility macros
 
-/// Expands into a series of for loops with the given block of code which should
-/// treat each type uniformly.
-///
-/// This is to avoid dynamic dispatch when chaining iterators over generic
-/// collections when the types are known.
-pub macro for_sequence {
-  ( $pattern:pat in ($($iter:expr),+) $do:block) => {
-    $(for $pattern in $iter $do)+
-  }
-}
-
 /// Print the stringified expression followed by its debug formatting
 pub macro show {
   ($e:expr) => {
