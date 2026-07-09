@@ -12,8 +12,18 @@ fn main () {
   env_logger::Builder::new()
     .filter_level (LevelFilter::Debug)
     .parse_default_env()
-    .format (log::env_logger_custom_formatter (log::EnvLoggerFormatConfig::default()))
-    //.format (log::env_logger_json_formatter (log::EnvLoggerFormatConfig::default()))
+    .format (log::env_logger_custom_formatter (
+      log::EnvLoggerFormatConfig::default()
+        .timestamp_precision (env_logger::TimestampPrecision::Millis)
+        .build()
+    ))
+    /*
+    .format (log::env_logger_json_formatter (
+      log::EnvLoggerFormatConfig::default()
+        .timestamp_precision (env_logger::TimestampPrecision::Millis)
+        .build()
+    ))
+    */
     .init();
   // test kv string
   log::info!("test kv string"; a=r#"hello"world""#);

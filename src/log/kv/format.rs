@@ -4,11 +4,12 @@ use std::{io, thread};
 use env_logger;
 use log;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug)]
 pub struct EnvLoggerFormatConfig {
-  pub thread : bool,
-  pub target : bool,
-  pub file   : bool
+  pub thread              : bool,
+  pub target              : bool,
+  pub file                : bool,
+  pub timestamp_precision : env_logger::TimestampPrecision
 }
 
 /// Formats log messages as a json object string
@@ -49,9 +50,14 @@ pub fn env_logger_json_formatter (config : EnvLoggerFormatConfig)
     };
     let mut kvv = KVVisitor::default();
     record.key_values().visit (&mut kvv).unwrap();
-    writeln!(buf, "{{\"ts\":\"{}\",\"level\":\"{}\"{}{}{},\"msg\":\"{}\"{}}}",
-      buf.timestamp(), record.level(), thread_string, target_string,
-      file_string, record.args(), kvv.0
+    let ts = match config.timestamp_precision {
+      env_logger::TimestampPrecision::Seconds => buf.timestamp_seconds(),
+      env_logger::TimestampPrecision::Millis  => buf.timestamp_millis(),
+      env_logger::TimestampPrecision::Micros  => buf.timestamp_micros(),
+      env_logger::TimestampPrecision::Nanos   => buf.timestamp_nanos()
+    };
+    writeln!(buf, "{{\"ts\":\"{ts}\",\"level\":\"{}\"{}{}{},\"msg\":\"{}\"{}}}",
+      record.level(), thread_string, target_string, file_string, record.args(), kvv.0
     )
   }
 }
@@ -94,9 +100,15 @@ pub fn env_logger_custom_formatter (config : EnvLoggerFormatConfig)
     } else {
       format!(" {}", kvv.0)
     };
+    let ts = match config.timestamp_precision {
+      env_logger::TimestampPrecision::Seconds => buf.timestamp_seconds(),
+      env_logger::TimestampPrecision::Millis  => buf.timestamp_millis(),
+      env_logger::TimestampPrecision::Micros  => buf.timestamp_micros(),
+      env_logger::TimestampPrecision::Nanos   => buf.timestamp_nanos()
+    };
     if !config.file && !config.thread && !config.target {
       let level_string = format!("{}:", record.level());
-      writeln!(buf, "{} {:6} {}{}", buf.timestamp(), level_string, record.args(), kvs)
+      writeln!(buf, "{ts} {level_string:6} {}{kvs}", record.args())
     } else {
       let thread_string = if config.thread {
         thread::current().name().map_or_else (
@@ -117,10 +129,37 @@ pub fn env_logger_custom_formatter (config : EnvLoggerFormatConfig)
       } else {
         "".to_string()
       };
-      writeln!(buf, "{} {:5}{}{}{}: {}{}",
-        buf.timestamp(), record.level(), thread_string, target_string, file_string,
-        record.args(), kvs)
+      writeln!(buf, "{ts} {:5}{}{}{}: {}{kvs}",
+        record.level(), thread_string, target_string, file_string, record.args())
     }
+  }
+}
+
+impl EnvLoggerFormatConfig {
+  pub const fn thread (&mut self, thread : bool) -> &mut Self {
+    self.thread = thread;
+    self
+  }
+
+  pub const fn target (&mut self, target : bool) -> &mut Self {
+    self.target = target;
+    self
+  }
+
+  pub const fn file (&mut self, file : bool) -> &mut Self {
+    self.file = file;
+    self
+  }
+
+  pub const fn timestamp_precision (&mut self, precision : env_logger::TimestampPrecision)
+    -> &mut Self
+  {
+    self.timestamp_precision = precision;
+    self
+  }
+
+  pub const fn build (&mut self) -> Self {
+    *self
   }
 }
 
@@ -129,7 +168,8 @@ impl Default for EnvLoggerFormatConfig {
     EnvLoggerFormatConfig {
       thread: true,
       target: true,
-      file:   true
+      file:   true,
+      timestamp_precision: env_logger::TimestampPrecision::Seconds
     }
   }
 }
