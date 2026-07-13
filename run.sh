@@ -3,6 +3,6 @@
 set -e
 set -x
 
-cargo run --example example --features=env-logger-format
+cargo run --example example --features=env-logger-format -- "$@"
 
 exit 0

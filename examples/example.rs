@@ -9,25 +9,28 @@ use rs_utils::log::{LevelFilter, kv as log};
 
 fn main () {
   println!("main...");
-  env_logger::Builder::new()
-    .filter_level (LevelFilter::Debug)
-    .parse_default_env()
-    .format (log::env_logger_custom_formatter (
-      log::EnvLoggerFormatConfig::default()
-        .timestamp_precision (env_logger::TimestampPrecision::Millis)
-        .build()
-    ))
-    /*
-    .format (log::env_logger_json_formatter (
-      log::EnvLoggerFormatConfig::default()
-        .timestamp_precision (env_logger::TimestampPrecision::Millis)
-        .build()
-    ))
-    */
-    .init();
+  {
+    let mut builder = env_logger::Builder::new();
+    builder.filter_level (LevelFilter::Debug)
+      .parse_default_env();
+    if std::env::args().nth (1).as_deref() == Some ("json") {
+      builder.format (log::env_logger_json_formatter (
+        log::EnvLoggerFormatConfig::default()
+          .timestamp_precision (env_logger::TimestampPrecision::Millis)
+          .build())
+      );
+    } else {
+      builder.format (log::env_logger_custom_formatter (
+        log::EnvLoggerFormatConfig::default()
+          .timestamp_precision (env_logger::TimestampPrecision::Millis)
+          .build())
+      );
+    }
+    builder.init();
+  }
   // test kv string
   log::info!("test kv string"; a=r#"hello"world""#);
-  log::info!("test kv string"; a=r#"hello "world""#);
+  log::info!("test kv string"; a=r#"hello "\world\""#);
   // incremental files example
   log::info!("example: incrementally named files");
   let temp_dir  = tempfile::Builder::new().prefix ("tmp").tempdir_in ("examples")

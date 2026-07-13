@@ -17,48 +17,53 @@ pub fn env_logger_json_formatter (config : EnvLoggerFormatConfig)
   -> impl Fn(&mut env_logger::fmt::Formatter, &log::Record<'_>) -> io::Result<()>
 {
   use io::Write;
-  #[derive(Default)]
-  struct KVVisitor(pub String);
-  impl <'kvs> log::kv::VisitSource <'kvs> for KVVisitor {
+  struct KVVisitor <'a, W : Write> (&'a mut W);
+  impl <'kvs, W> log::kv::VisitSource <'kvs> for KVVisitor <'_, W> where W : Write {
     fn visit_pair (&mut self, key : log::kv::Key <'kvs>, value : log::kv::Value <'kvs>)
       -> Result <(), log::kv::Error>
     {
-      self.0 += format!(",\"{}\":{}", key, serde_json::to_string (&value).unwrap())
-        .as_str();
-      Ok(())
+      write!(self.0, ",")?;
+      serde_json::to_writer (&mut *self.0, key.as_str()).map_err (
+        |_| log::kv::Error::msg ("serialization failed"))?;
+      write!(self.0, ":")?;
+      serde_json::to_writer (&mut *self.0, &value).map_err (
+        |_| log::kv::Error::msg ("serialization failed"))
     }
   }
   move |buf : &mut env_logger::fmt::Formatter, record : &log::Record|{
-    let thread_string = if config.thread {
-      thread::current().name().map_or_else (
-        || format!(",\"thread\":\"{:?}\"", thread::current().id())
-          .replace ("ThreadId", "unnamed"),
-        |name| format!(",\"thread\":\"{name}\""))
-    } else {
-      "".to_string()
-    };
-    let target_string = if config.target {
-      format!(",\"target\":\"{}\"", record.target())
-    } else {
-      "".to_string()
-    };
-    let file_string = if config.file {
-      format!(",\"file\":\"{}:{}\"",
-        record.file().unwrap_or ("<unknown>"), record.line().unwrap_or (0))
-    } else {
-      "".to_string()
-    };
-    let mut kvv = KVVisitor::default();
-    record.key_values().visit (&mut kvv).unwrap();
     let ts = match config.timestamp_precision {
       env_logger::TimestampPrecision::Seconds => buf.timestamp_seconds(),
       env_logger::TimestampPrecision::Millis  => buf.timestamp_millis(),
       env_logger::TimestampPrecision::Micros  => buf.timestamp_micros(),
       env_logger::TimestampPrecision::Nanos   => buf.timestamp_nanos()
     };
-    writeln!(buf, "{{\"ts\":\"{ts}\",\"level\":\"{}\"{}{}{},\"msg\":\"{}\"{}}}",
-      record.level(), thread_string, target_string, file_string, record.args(), kvv.0
-    )
+    write!(buf, "{{\"ts\":")?;
+    serde_json::to_writer (&mut *buf, &ts.to_string()).map_err (io::Error::other)?;
+    write!(buf, ",\"level\":")?;
+    serde_json::to_writer (&mut *buf, record.level().as_str())
+      .map_err (io::Error::other)?;
+    if config.thread {
+      write!(buf, ",\"thread\":")?;
+      serde_json::to_writer (&mut *buf, &thread::current().name().map_or_else (
+        || format!("{:?}", thread::current().id()).replace ("ThreadId", "unnamed"),
+        str::to_string
+      )).map_err (io::Error::other)?;
+    }
+    if config.target {
+      write!(buf, ",\"target\":")?;
+      serde_json::to_writer (&mut *buf, record.target()).map_err (io::Error::other)?;
+    }
+    if config.file {
+      write!(buf, ",\"target\":")?;
+      serde_json::to_writer (&mut *buf, &format!("{}:{}",
+        record.file().unwrap_or ("<unknown>"), record.line().unwrap_or (0))
+      ).map_err (io::Error::other)?;
+    }
+    write!(buf, ",\"msg\":")?;
+    serde_json::to_writer (&mut *buf, &record.args().to_string())?;
+    let mut kvv = KVVisitor (buf);
+    record.key_values().visit (&mut kvv).unwrap();
+    writeln!(buf, "}}")
   }
 }
 
