@@ -1,4 +1,6 @@
-# `rs_utils` &emsp; [![Latest Version]][crates.io] [![Rust Version]][nightly] [![License]][license-file] [![Documentation]][docs] [![Build Status]][actions]
+# `rs_utils`
+
+[![Latest Version]][crates.io] [![Rust Version]][nightly] [![License]][license-file] [![Documentation]][docs] [![Build Status]][actions]
 
 [Latest Version]: https://img.shields.io/crates/v/nsys-rs-utils.svg
 [crates.io]: https://crates.io/crates/nsys-rs-utils
