@@ -54,7 +54,7 @@ pub fn env_logger_json_formatter (config : EnvLoggerFormatConfig)
       serde_json::to_writer (&mut *buf, record.target()).map_err (io::Error::other)?;
     }
     if config.file {
-      write!(buf, ",\"target\":")?;
+      write!(buf, ",\"file\":")?;
       serde_json::to_writer (&mut *buf, &format!("{}:{}",
         record.file().unwrap_or ("<unknown>"), record.line().unwrap_or (0))
       ).map_err (io::Error::other)?;
