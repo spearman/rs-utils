@@ -7,7 +7,7 @@ use std::cmp;
 ///
 /// This follows the convention of `f32::min` and `f32::max`, but the opposite
 /// convention is used internally by the `collision` crate.
-pub fn min_partial <S> (lhs : S, rhs : S) -> S where S : Copy + PartialOrd {
+pub fn min_partial<S: Copy + PartialOrd>(lhs: S, rhs: S) -> S {
   match lhs.partial_cmp (&rhs) {
     Some (cmp::Ordering::Less) | Some (cmp::Ordering::Equal) => lhs,
     _ => rhs
@@ -19,7 +19,7 @@ pub fn min_partial <S> (lhs : S, rhs : S) -> S where S : Copy + PartialOrd {
 ///
 /// This follows the convention of `f32::min` and `f32::max`, but the opposite
 /// convention is used internally by the `collision` crate.
-pub fn max_partial <S> (lhs : S, rhs : S) -> S where S : Copy + PartialOrd {
+pub fn max_partial<S: Copy + PartialOrd>(lhs: S, rhs: S) -> S {
   match lhs.partial_cmp (&rhs) {
     Some (cmp::Ordering::Greater) | Some (cmp::Ordering::Equal) => lhs,
     _ => rhs
